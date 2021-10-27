@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="questionDao" class="ru.otus.homework.spring_2021_08.hw1.dao.QuestionDaoCsv">
+        <constructor-arg name="csvResourcePath" value="./questions.csv"/>
+        <constructor-arg name="separator" value=","/>
+        <constructor-arg name="ignoreQuotations" value="false"/>
+        <constructor-arg name="skipLines" value="1"/>
+    </bean>
+
+    <bean id="questionService" class="ru.otus.homework.spring_2021_08.hw1.service.QuestionServiceImpl">
+        <constructor-arg name="dao" ref="questionDao"/>
+    </bean>
+
+</beans>
