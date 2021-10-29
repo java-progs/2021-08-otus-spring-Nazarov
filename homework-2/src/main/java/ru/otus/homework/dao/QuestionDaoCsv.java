@@ -1,0 +1,92 @@
+package ru.otus.homework.dao;
+
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import ru.otus.homework.domain.Question;
+import ru.otus.homework.domain.QuestionChoiceAnswer;
+import ru.otus.homework.domain.QuestionSimple;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+
+public class QuestionDaoCsv implements QuestionDao {
+
+    private final String csvResourcePath;
+    private final char separator;
+    private final boolean ignoreQuotations;
+    private final int skipLines;
+
+    public QuestionDaoCsv(String csvResourcePath, char separator, boolean ignoreQuotations, int skipLines) {
+        this.csvResourcePath = csvResourcePath;
+        this.separator = separator;
+        this.ignoreQuotations = ignoreQuotations;
+        this.skipLines = skipLines;
+    }
+
+    private List<String[]> readCsv(String resourcePath) {
+        CSVParser parser = new CSVParserBuilder()
+                .withSeparator(separator)
+                .withIgnoreQuotations(ignoreQuotations)
+                .build();
+
+        Resource csvResource = new ClassPathResource(resourcePath);
+
+        try (Reader fileReader = new InputStreamReader(csvResource.getInputStream());
+             CSVReader csvReader = new CSVReaderBuilder(fileReader)
+                     .withSkipLines(skipLines)
+                     .withCSVParser(parser)
+                     .build()) {
+
+            List<String[]> recordsList = csvReader.readAll();
+
+            return recordsList;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (CsvException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<Question> createQuestionsList(List<String[]> recordsList) {
+        List<Question> questionList = new ArrayList<>();
+
+        for (String[] records : recordsList) {
+            try {
+                String questionValue = records[0];
+                String answersListValue = records[1];
+                String correctAnswerValue = records[2];
+
+                //Если список вариантов ответа answersListValue пустой, то это простой вопрос с вводом ответа
+                //Иначе это вопрос с выбором ответа
+                if (answersListValue == null || answersListValue.equals("")) {
+                    questionList.add(new QuestionSimple(questionValue, correctAnswerValue));
+                } else {
+                    try {
+                        Integer.parseInt(correctAnswerValue);
+                        questionList.add(new QuestionChoiceAnswer(questionValue + ' '
+                                + answersListValue, correctAnswerValue));
+                    } catch (NumberFormatException e) {
+                        //пропуск вопроса
+                    }
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                //пропуск записи
+            }
+        }
+
+        return questionList;
+    }
+
+    @Override
+    public List<Question> getAll() {
+        return createQuestionsList(readCsv(this.csvResourcePath));
+    }
+}
