@@ -4,6 +4,8 @@ import java.util.Scanner;
 
 public class IOServiceImpl implements IOService {
 
+    Scanner in = new Scanner(System.in);
+
     @Override
     public void sendMessage(String message) {
         System.out.print(message);
@@ -11,9 +13,7 @@ public class IOServiceImpl implements IOService {
 
     @Override
     public String getMessage() {
-        Scanner in = new Scanner(System.in);
-        String message = in.nextLine();
-        in.close();
+        String message = in.next();
         return message;
     }
 }

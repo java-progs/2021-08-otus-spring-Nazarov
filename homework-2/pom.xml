@@ -47,7 +47,7 @@
     <packaging>jar</packaging>
 
     <build>
-        <finalName>homework-1</finalName>
+        <finalName>homework-2</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
