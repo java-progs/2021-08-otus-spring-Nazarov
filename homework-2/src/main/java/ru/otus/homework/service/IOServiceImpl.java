@@ -1,19 +1,38 @@
 package ru.otus.homework.service;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Scanner;
 
+@PropertySource("classpath:application.properties")
+@Service
 public class IOServiceImpl implements IOService {
 
-    Scanner in = new Scanner(System.in);
+    private final Scanner scanner;
+    private final OutputStream writer;
+
+    public IOServiceImpl(@Value("#{ T(java.lang.System).in}") InputStream is,
+                         @Value("#{ T(java.lang.System).out}") OutputStream os) {
+        this.scanner = new Scanner(is);
+        this.writer = os;
+    }
 
     @Override
     public void sendMessage(String message) {
-        System.out.print(message);
+        try {
+            writer.write(message.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String getMessage() {
-        String message = in.next();
-        return message;
+        return scanner.nextLine();
     }
 }

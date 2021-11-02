@@ -5,11 +5,15 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import ru.otus.homework.domain.Question;
 import ru.otus.homework.domain.QuestionChoiceAnswer;
 import ru.otus.homework.domain.QuestionSimple;
+import ru.otus.homework.exception.QuestionFormatException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,6 +21,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+@PropertySource("classpath:application.properties")
+@Service
 public class QuestionDaoCsv implements QuestionDao {
 
     private final String csvResourcePath;
@@ -24,7 +30,10 @@ public class QuestionDaoCsv implements QuestionDao {
     private final boolean ignoreQuotations;
     private final int skipLines;
 
-    public QuestionDaoCsv(String csvResourcePath, char separator, boolean ignoreQuotations, int skipLines) {
+    public QuestionDaoCsv(@Value("${csv.resourcePath}") String csvResourcePath,
+                          @Value("${csv.separator}") char separator,
+                          @Value("${csv.ignoreQuotations}") boolean ignoreQuotations,
+                          @Value("${csv.skipLines}") int skipLines) {
         this.csvResourcePath = csvResourcePath;
         this.separator = separator;
         this.ignoreQuotations = ignoreQuotations;
@@ -55,7 +64,7 @@ public class QuestionDaoCsv implements QuestionDao {
         }
     }
 
-    private List<Question> createQuestionsList(List<String[]> recordsList) {
+    private List<Question> createQuestionsList(List<String[]> recordsList) throws QuestionFormatException {
         List<Question> questionList = new ArrayList<>();
 
         for (String[] records : recordsList) {
@@ -74,11 +83,13 @@ public class QuestionDaoCsv implements QuestionDao {
                         questionList.add(new QuestionChoiceAnswer(questionValue + ' '
                                 + answersListValue, correctAnswerValue));
                     } catch (NumberFormatException e) {
-                        //пропуск вопроса
+                        throw new QuestionFormatException(String.format("Not number answer value: %s",
+                                correctAnswerValue));
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                //пропуск записи
+                throw new QuestionFormatException(String.format("Invalid answer format. Array index of bounds: %s",
+                        e.getMessage()));
             }
         }
 
@@ -87,6 +98,10 @@ public class QuestionDaoCsv implements QuestionDao {
 
     @Override
     public List<Question> getAll() {
-        return createQuestionsList(readCsv(this.csvResourcePath));
+        try {
+            return createQuestionsList(readCsv(this.csvResourcePath));
+        } catch (QuestionFormatException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

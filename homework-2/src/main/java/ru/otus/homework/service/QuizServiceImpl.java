@@ -1,50 +1,62 @@
 package ru.otus.homework.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 import ru.otus.homework.domain.Question;
 
 import java.util.List;
 
+@PropertySource("classpath:application.properties")
+@Service
 public class QuizServiceImpl implements QuizService {
 
     private final QuestionService questionService;
     private final IOService ioService;
+    private final int answersForPassing;
 
-    private List<Question> questionsList;
-    private int questionsCount;
-    private int nextQuestionId;
-
-    @Value("${quiz.countAnswersForPassing}")
-    private int answersForPassing;
     private int correctAnswers;
-    private String studentName;
 
-    public QuizServiceImpl(QuestionService questionService, IOService ioService) {
+    public QuizServiceImpl(QuestionService questionService, IOService ioService,
+                           @Value("${quiz.countAnswersForPassing}") int answersForPassing) {
         this.questionService = questionService;
         this.ioService = ioService;
+        this.answersForPassing = answersForPassing;
     }
 
     @Override
     public void startQuiz() {
-        questionsList = questionService.getAllQuestions();
-        questionsCount = questionService.getCountQuestions();
 
-        nextQuestionId = 0;
-        correctAnswers = 0;
-        ioService.sendMessage("Enter your name: ");
-        studentName = ioService.getMessage();
-        ioService.sendMessage(String.format("Hello, %s! A quiz has started. Total questions: %s%n", studentName, questionsCount));
+        studentGreeting(questionService.getCountQuestions());
 
-        while (nextQuestionId < questionsCount) {
-            askNextQuestion();
-            if (getAndCheckAnswer()) correctAnswers++;
-            nextQuestionId++;
-        }
+        correctAnswers = quizProcess(questionService.getAllQuestions());
 
-        endQuiz();
+        endQuiz(answersForPassing, correctAnswers);
     }
 
-    private void endQuiz() {
+    private void studentGreeting(int questionsCount) {
+        ioService.sendMessage("Enter your name: ");
+        String studentName = ioService.getMessage();
+        ioService.sendMessage(String.format("Hello, %s! A quiz has started. Total questions: %s%n", studentName, questionsCount));
+    }
+
+    private int quizProcess(List<Question> questionsList) {
+        int correctAnswers = 0;
+        int questionNumber = 1;
+
+        for (var question: questionsList) {
+            askQuestion(questionNumber, question);
+            if (getAndCheckAnswer(question)) {
+                correctAnswers++;
+            }
+
+            questionNumber++;
+        }
+
+        return correctAnswers;
+    }
+
+    private void endQuiz(int answersForPassing, int correctAnswers) {
         String quizStatus = "not passed";
         if (correctAnswers >= answersForPassing) {
             quizStatus = "passed";
@@ -53,14 +65,13 @@ public class QuizServiceImpl implements QuizService {
         ioService.sendMessage(String.format("The Quiz is %s%n", quizStatus));
     }
 
-    private void askNextQuestion() {
-        ioService.sendMessage(String.format("Question %d: %s%n", nextQuestionId + 1,
-                questionsList.get(nextQuestionId).getQuestion()));
+    public void askQuestion(int questionNumber, Question question) {
+        ioService.sendMessage(String.format("Question %d: %s%n", questionNumber, question.getQuestion()));
     }
 
-    private boolean getAndCheckAnswer() {
+    public boolean getAndCheckAnswer(Question question) {
         ioService.sendMessage("Your answer: ");
         String answer = ioService.getMessage();
-        return questionsList.get(nextQuestionId).checkAnswer(answer);
+        return question.checkAnswer(answer);
     }
 }
