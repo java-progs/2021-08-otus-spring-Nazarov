@@ -6,10 +6,9 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.otus.homework.domain.Question;
 import ru.otus.homework.domain.QuestionChoiceAnswer;
 import ru.otus.homework.domain.QuestionSimple;
@@ -21,8 +20,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-@PropertySource("classpath:application.properties")
-@Service
+@Component
 public class QuestionDaoCsv implements QuestionDao {
 
     private final String csvResourcePath;
@@ -88,7 +86,7 @@ public class QuestionDaoCsv implements QuestionDao {
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                throw new QuestionFormatException(String.format("Invalid answer format. Array index of bounds: %s",
+                throw new QuestionFormatException(String.format("Invalid answer format. Array index out of bounds: %s",
                         e.getMessage()));
             }
         }

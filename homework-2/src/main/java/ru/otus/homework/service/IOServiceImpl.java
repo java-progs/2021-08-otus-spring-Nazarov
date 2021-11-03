@@ -1,7 +1,6 @@
 package ru.otus.homework.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
-@PropertySource("classpath:application.properties")
 @Service
 public class IOServiceImpl implements IOService {
 

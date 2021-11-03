@@ -1,21 +1,17 @@
 package ru.otus.homework.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.domain.Question;
 
 import java.util.List;
 
-@PropertySource("classpath:application.properties")
 @Service
 public class QuizServiceImpl implements QuizService {
 
     private final QuestionService questionService;
     private final IOService ioService;
     private final int answersForPassing;
-
-    private int correctAnswers;
 
     public QuizServiceImpl(QuestionService questionService, IOService ioService,
                            @Value("${quiz.countAnswersForPassing}") int answersForPassing) {
@@ -26,6 +22,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public void startQuiz() {
+        int correctAnswers;
 
         studentGreeting(questionService.getCountQuestions());
 
@@ -42,15 +39,14 @@ public class QuizServiceImpl implements QuizService {
 
     private int quizProcess(List<Question> questionsList) {
         int correctAnswers = 0;
-        int questionNumber = 1;
 
-        for (var question: questionsList) {
-            askQuestion(questionNumber, question);
+        for (int i = 0; i < questionsList.size(); i++) {
+            Question question = questionsList.get(i);
+            askQuestion(i + 1, question);
+
             if (getAndCheckAnswer(question)) {
                 correctAnswers++;
             }
-
-            questionNumber++;
         }
 
         return correctAnswers;
