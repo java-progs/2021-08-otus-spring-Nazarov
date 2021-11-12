@@ -5,6 +5,7 @@ import ru.otus.homework.dao.QuestionDao;
 import ru.otus.homework.domain.Question;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -13,6 +14,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     public QuestionServiceImpl(QuestionDao dao) {
         this.dao = dao;
+    }
+
+    public void setLocale(Locale locale) {
+        dao.setLocale(locale);
     }
 
     @Override

@@ -1,0 +1,12 @@
+spring:
+  messages:
+    basename: i18n/messages
+
+csv:
+  resourcePath: ./questions2.csv
+  separator: ","
+  ignoreQuotations: false
+  skipLines: 1
+
+quiz:
+  countAnswersForPassing: 3
