@@ -1,7 +1,6 @@
 package ru.otus.homework.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.domain.Question;
 
@@ -12,33 +11,21 @@ import java.util.Locale;
 public class QuizServiceImpl implements QuizService {
 
     private final QuestionService questionService;
-    private final IOService ioService;
+    private final MessageService messageService;
     private final int answersForPassing;
-    private final MessageSource messageSource;
 
-    private Locale locale;
-
-    {
-        locale = Locale.getDefault();
-    }
-
-    public QuizServiceImpl(QuestionService questionService, IOService ioService,
-                           @Value("${quiz.countAnswersForPassing}") int answersForPassing,
-                           MessageSource messageSource) {
+    public QuizServiceImpl(QuestionService questionService, MessageService messageService,
+                           @Value("${quiz.countAnswersForPassing}") int answersForPassing) {
         this.questionService = questionService;
-        this.ioService = ioService;
+        this.messageService = messageService;
         this.answersForPassing = answersForPassing;
-        this.messageSource = messageSource;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 
     @Override
     public void startQuiz() {
         int correctAnswers;
-        questionService.setLocale(locale);
+
+        messageService.setLocale(new Locale("ru", "RU"));
 
         studentGreeting(questionService.getCountQuestions());
 
@@ -48,10 +35,10 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private void studentGreeting(int questionsCount) {
-        ioService.sendMessage(messageSource.getMessage("strings.getName", null, locale));
-        String studentName = ioService.getMessage();
-        ioService.sendMessage(messageSource.getMessage("strings.startQuiz",
-                new String[] {studentName, String.format("%s%n", questionsCount)}, locale));
+        messageService.showMessage("strings.getName", null);
+        String studentName = messageService.readMessage();
+        messageService.showMessage("strings.startQuiz",
+                new String[] {studentName, String.format("%s%n", questionsCount)});
     }
 
     private int quizProcess(List<Question> questionsList) {
@@ -70,23 +57,26 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private void endQuiz(int answersForPassing, int correctAnswers) {
-        String quizStatus = messageSource.getMessage("strings.quizNotPassed", null, locale);
+        messageService.showMessage("strings.quizCompleted",
+                new String[] {String.format("%s%n%s", correctAnswers,
+                        getQuizStatus(answersForPassing, correctAnswers))});
+    }
+
+    private String getQuizStatus(int answersForPassing, int correctAnswers) {
         if (correctAnswers >= answersForPassing) {
-            quizStatus = messageSource.getMessage("strings.quizPassed", null, locale);
+            return messageService.getMessage("strings.quizPassed", null);
         }
-        ioService.sendMessage(messageSource.getMessage("strings.quizCompleted",
-                new String[] {String.format("%s%n", correctAnswers)}, locale));
-        ioService.sendMessage(quizStatus);
+
+        return messageService.getMessage("strings.quizNotPassed", null);
     }
 
     public void askQuestion(int questionNumber, Question question) {
-        ioService.sendMessage(messageSource.getMessage("strings.question",
-                new String[] {String.format("%d", questionNumber), String.format("%s%n", question.getQuestion())}, locale));
+        messageService.showMessage("strings.question",
+                new String[] {String.format("%d", questionNumber), String.format("%s%n", question.getQuestion())});
     }
 
     public boolean getAndCheckAnswer(Question question) {
-        ioService.sendMessage(messageSource.getMessage("strings.getAnswer", null, locale));
-        String answer = ioService.getMessage();
-        return question.checkAnswer(answer);
+        messageService.showMessage("strings.getAnswer", null);
+        return question.checkAnswer(messageService.readMessage());
     }
 }

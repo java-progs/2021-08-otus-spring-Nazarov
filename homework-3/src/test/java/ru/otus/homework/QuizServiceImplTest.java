@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.MessageSource;
 import ru.otus.homework.domain.Question;
 import ru.otus.homework.domain.QuestionSimple;
 import ru.otus.homework.service.*;
@@ -22,80 +21,42 @@ import static org.mockito.Mockito.mock;
 @SpringBootTest
 @DisplayName("Quiz service")
 public class QuizServiceImplTest {
-    
-    private QuestionService questionService;
+
+    private InputStream is;
+    private OutputStream os;
     private IOService ioService;
+    private QuestionService questionService;
+    private MessageService messageService;
     private QuizServiceImpl quizService;
 
     @Autowired
-    private MessageSource messageSource;
+    LocalizationService localizationService;
 
     @BeforeEach
-    void createServices() {
+    public void createServices() {
+        is = new ByteArrayInputStream("5".getBytes());
+        os = new ByteArrayOutputStream();
+        ioService = new IOServiceImpl(is, os);
         questionService = mock(QuestionServiceImpl.class);
+        messageService = new MessageServiceImpl(localizationService, ioService);
+        quizService = new QuizServiceImpl(questionService, messageService, 5);
     }
-    
-    @DisplayName("Корректно задается вопрос на английском")
+
     @Test
-    void askQuestionEn() {
-        InputStream is = new ByteArrayInputStream("".getBytes());
-        OutputStream os = new ByteArrayOutputStream();
-
-        ioService = new IOServiceImpl(is, os);
-        quizService = new QuizServiceImpl(questionService, ioService, 1, messageSource);
-        quizService.setLocale(new Locale("en" , "EN"));
-
-        Question questionSimple = new QuestionSimple("10 * 2 = ", "20");
-        quizService.askQuestion(2, questionSimple);
-
-        assertThat(os.toString()).isEqualTo(String.format("Question %s: %s%n", 2, questionSimple.getQuestion()));
+    @DisplayName("Корректно задает вопрос")
+    public void askQuestion() {
+        messageService.setLocale(new Locale("ru", "RU"));
+        Question question = new QuestionSimple("2 + 3 =", "5");
+        quizService.askQuestion(7, question);
+        assertThat(os.toString()).isEqualTo(String.format("%s%n", "Вопрос 7: 2 + 3 ="));
     }
 
-    @DisplayName("Корректно проверяется ответ на английском")
     @Test
-    void getAndCheckAnswerEn() {
-        InputStream is = new ByteArrayInputStream("20\n".getBytes());
-        OutputStream os = new ByteArrayOutputStream();
-
-        ioService = new IOServiceImpl(is, os);
-        quizService = new QuizServiceImpl(questionService, ioService, 1, messageSource);
-        quizService.setLocale(new Locale("en" , "EN"));
-
-        Question questionSimple = new QuestionSimple("10 * 2 = ", "20");
-
-        assertThat(quizService.getAndCheckAnswer(questionSimple)).isTrue();
-        assertThat(os.toString()).isEqualTo("Your answer: ");
+    @DisplayName("Корректно проверяет ответ")
+    public void getAndCheckAnswer() {
+        messageService.setLocale(new Locale("ru", "RU"));
+        Question question = new QuestionSimple("2 + 3 =", "5");
+        assertThat(quizService.getAndCheckAnswer(question)).isTrue();
     }
 
-    @DisplayName("Корректно задается вопрос на русском")
-    @Test
-    void askQuestionRu() {
-        InputStream is = new ByteArrayInputStream("".getBytes());
-        OutputStream os = new ByteArrayOutputStream();
-
-        ioService = new IOServiceImpl(is, os);
-        quizService = new QuizServiceImpl(questionService, ioService, 1, messageSource);
-        quizService.setLocale(new Locale("ru" , "RU"));
-
-        Question questionSimple = new QuestionSimple("10 * 2 = ", "20");
-        quizService.askQuestion(2, questionSimple);
-
-        assertThat(os.toString()).isEqualTo(String.format("Вопрос %s: %s%n", 2, questionSimple.getQuestion()));
-    }
-
-    @DisplayName("Корректно проверяется ответ на русском")
-    @Test
-    void getAndCheckAnswerRu() {
-        InputStream is = new ByteArrayInputStream("20\n".getBytes());
-        OutputStream os = new ByteArrayOutputStream();
-
-        ioService = new IOServiceImpl(is, os);
-        quizService = new QuizServiceImpl(questionService, ioService, 1, messageSource);
-        quizService.setLocale(new Locale("ru" , "RU"));
-
-        Question questionSimple = new QuestionSimple("10 * 2 = ", "20");
-
-        assertThat(quizService.getAndCheckAnswer(questionSimple)).isTrue();
-        assertThat(os.toString()).isEqualTo("Ответ: ");
-    }
 }

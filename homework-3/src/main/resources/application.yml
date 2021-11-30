@@ -7,6 +7,9 @@ spring:
     ansi:
       enabled: always
 
+i18n:
+  locale: "ru_RU"
+
 csv:
   resourcePath: ./questions.csv
   separator: ","

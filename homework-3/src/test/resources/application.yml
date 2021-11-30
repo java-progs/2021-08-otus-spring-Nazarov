@@ -1,6 +1,12 @@
 spring:
   messages:
     basename: i18n/messages
+  shell:
+    interactive:
+      enabled: false
+
+i18n:
+  locale: "ru_RU"
 
 csv:
   resourcePath: ./questions2.csv

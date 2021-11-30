@@ -14,53 +14,37 @@ import ru.otus.homework.domain.QuestionChoiceAnswer;
 import ru.otus.homework.domain.QuestionSimple;
 import ru.otus.homework.exception.QuestionCSVFormatException;
 import ru.otus.homework.exception.QuestionFormatException;
+import ru.otus.homework.provider.LocaleProvider;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component
 public class QuestionDaoCsv implements QuestionDao {
-    private final Locale DEFAULT_LOCALE = new Locale("en", "EN");
 
-    private final String csvResourcePath;
-    private final char separator;
-    private final boolean ignoreQuotations;
-    private final int skipLines;
+    private final CSVConfig config;
+    private final LocaleProvider localeProvider;
 
-    private Locale locale;
-
-    public QuestionDaoCsv(CSVConfig config) {
-        this.csvResourcePath = config.getResourcePath();
-        this.separator = config.getSeparator();
-        this.ignoreQuotations = config.isIgnoreQuotations();
-        this.skipLines = config.getSkipLines();
-        this.locale = DEFAULT_LOCALE;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
-
-    public Locale getLocale() {
-        return locale;
+    public QuestionDaoCsv(CSVConfig config, LocaleProvider localeProvider) {
+        this.config = config;
+        this.localeProvider = localeProvider;
     }
 
     private List<String[]> readCsv(String resourcePath) {
         CSVParser parser = new CSVParserBuilder()
-                .withSeparator(separator)
-                .withIgnoreQuotations(ignoreQuotations)
+                .withSeparator(config.getSeparator())
+                .withIgnoreQuotations(config.isIgnoreQuotations())
                 .build();
 
         Resource csvResource = new ClassPathResource(resourcePath);
 
         try (Reader fileReader = new InputStreamReader(csvResource.getInputStream());
              CSVReader csvReader = new CSVReaderBuilder(fileReader)
-                     .withSkipLines(skipLines)
+                     .withSkipLines(config.getSkipLines())
                      .withCSVParser(parser)
                      .build()) {
             return csvReader.readAll();
@@ -69,15 +53,15 @@ public class QuestionDaoCsv implements QuestionDao {
         }
     }
 
-    private List<Question> createQuestionsList(List<String[]> recordsList, Locale locale) throws QuestionFormatException,
+    private List<Question> createQuestionsList(List<String[]> recordsList) throws QuestionFormatException,
             QuestionCSVFormatException {
         List<Question> questionList = new ArrayList<>();
-        String localeName = locale.toString();
+        String localeName = localeProvider.getLocale().toString();
         List<String[]> filteredList;
 
         try {
             filteredList = recordsList.stream()
-                    .filter(strings -> strings[3].equals(localeName))
+                    .filter(strings -> strings[3].equalsIgnoreCase(localeName))
                     .collect(Collectors.toList());
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new QuestionCSVFormatException(e.getMessage());
@@ -115,7 +99,7 @@ public class QuestionDaoCsv implements QuestionDao {
     @Override
     public List<Question> getAll() {
         try {
-            return createQuestionsList(readCsv(this.csvResourcePath), this.locale);
+            return createQuestionsList(readCsv(config.getResourcePath()));
         } catch (QuestionFormatException|QuestionCSVFormatException e) {
             throw new RuntimeException(e);
         }
