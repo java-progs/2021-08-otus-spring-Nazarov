@@ -4,12 +4,10 @@ import java.util.Locale;
 
 public interface MessageService {
 
-    public void showMessage(String message, Object[] args);
+    void showMessage(String message, Object... args);
 
-    public String readMessage();
+    String readMessage();
 
-    public String getMessage(String message, Object[] args);
-
-    public void setLocale(Locale locale);
+    String getMessage(String message, Object... args);
 
 }

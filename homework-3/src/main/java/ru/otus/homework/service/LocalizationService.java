@@ -6,8 +6,6 @@ import java.util.Locale;
 
 public interface LocalizationService {
 
-    String getLocalizationMessage(String message, @Nullable Object[] args);
-
-    void setLocale(Locale locale);
+    String getLocalizationMessage(String message, @Nullable Object... args);
 
 }

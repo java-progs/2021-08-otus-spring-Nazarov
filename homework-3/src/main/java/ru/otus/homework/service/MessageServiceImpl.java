@@ -7,8 +7,8 @@ import java.util.Locale;
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    private LocalizationService localizationService;
-    private IOService ioService;
+    private final LocalizationService localizationService;
+    private final IOService ioService;
 
     public MessageServiceImpl(LocalizationService localizationService, IOService ioService) {
         this.localizationService = localizationService;
@@ -16,12 +16,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void showMessage(String message, Object[] args) {
+    public void showMessage(String message, Object... args) {
         ioService.sendMessage(getMessage(message, args));
     }
 
     @Override
-    public String getMessage(String message, Object[] args) {
+    public String getMessage(String message, Object... args) {
         return localizationService.getLocalizationMessage(message, args);
     }
 
@@ -30,8 +30,4 @@ public class MessageServiceImpl implements MessageService {
         return ioService.getMessage();
     }
 
-    @Override
-    public void setLocale(Locale locale) {
-        localizationService.setLocale(locale);
-    }
 }

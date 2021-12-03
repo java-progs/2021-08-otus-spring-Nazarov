@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.otus.homework.provider.LocaleProvider;
 import ru.otus.homework.service.*;
 
 import java.io.ByteArrayInputStream;
@@ -22,6 +23,9 @@ public class MessageServiceImplTest {
     private InputStream is;
     private MessageService messageService;
     private IOService ioService;
+
+    @Autowired
+    private LocaleProvider localeProvider;
 
     @Autowired
     private LocalizationService localizationService;
@@ -55,8 +59,8 @@ public class MessageServiceImplTest {
     @DisplayName("Корректно получает сообщение")
     public void getMessage() {
         messageService = new MessageServiceImpl(localizationService, ioService);
-        messageService.setLocale(new Locale("ru", "RU"));
-        assertThat(messageService.getMessage("strings.quizCompleted", new String[] {"5"}))
+        localeProvider.setLocale(new Locale("ru", "RU"));
+        assertThat(messageService.getMessage("strings.quizCompleted", "5"))
                 .isEqualTo("Тестирование завершено. Правильных ответов: 5");
     }
 

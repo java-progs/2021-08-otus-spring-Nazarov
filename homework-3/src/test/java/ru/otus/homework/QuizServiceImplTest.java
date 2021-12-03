@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.otus.homework.domain.Question;
 import ru.otus.homework.domain.QuestionSimple;
+import ru.otus.homework.provider.LocaleProvider;
 import ru.otus.homework.service.*;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +31,10 @@ public class QuizServiceImplTest {
     private QuizServiceImpl quizService;
 
     @Autowired
-    LocalizationService localizationService;
+    private LocaleProvider localeProvider;
+
+    @Autowired
+    private LocalizationService localizationService;
 
     @BeforeEach
     public void createServices() {
@@ -39,13 +43,13 @@ public class QuizServiceImplTest {
         ioService = new IOServiceImpl(is, os);
         questionService = mock(QuestionServiceImpl.class);
         messageService = new MessageServiceImpl(localizationService, ioService);
-        quizService = new QuizServiceImpl(questionService, messageService, 5);
+        quizService = new QuizServiceImpl(questionService, messageService, 5, localeProvider);
     }
 
     @Test
     @DisplayName("Корректно задает вопрос")
     public void askQuestion() {
-        messageService.setLocale(new Locale("ru", "RU"));
+        localeProvider.setLocale(new Locale("ru", "RU"));
         Question question = new QuestionSimple("2 + 3 =", "5");
         quizService.askQuestion(7, question);
         assertThat(os.toString()).isEqualTo(String.format("%s%n", "Вопрос 7: 2 + 3 ="));
@@ -54,7 +58,7 @@ public class QuizServiceImplTest {
     @Test
     @DisplayName("Корректно проверяет ответ")
     public void getAndCheckAnswer() {
-        messageService.setLocale(new Locale("ru", "RU"));
+        localeProvider.setLocale(new Locale("ru", "RU"));
         Question question = new QuestionSimple("2 + 3 =", "5");
         assertThat(quizService.getAndCheckAnswer(question)).isTrue();
     }

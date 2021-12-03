@@ -8,7 +8,7 @@ spring:
       enabled: always
 
 i18n:
-  locale: "ru_RU"
+  locale: "en_EN"
 
 csv:
   resourcePath: ./questions.csv

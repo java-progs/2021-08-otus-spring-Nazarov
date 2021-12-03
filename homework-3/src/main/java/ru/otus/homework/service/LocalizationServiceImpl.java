@@ -10,19 +10,17 @@ import java.util.Locale;
 @Service
 public class LocalizationServiceImpl implements LocalizationService {
 
-    private MessageSource messageSource;
-    private LocaleProvider localeProvider;
+    private final MessageSource messageSource;
+    private final LocaleProvider localeProvider;
 
     public LocalizationServiceImpl(MessageSource messageSource, LocaleProvider localeProvider) {
         this.messageSource = messageSource;
         this.localeProvider = localeProvider;
     }
 
-    public String getLocalizationMessage(String messageName, @Nullable Object[] args) {
+    @Override
+    public String getLocalizationMessage(String messageName, @Nullable Object... args) {
         return messageSource.getMessage(messageName, args, localeProvider.getLocale());
     }
 
-    public void setLocale(Locale locale) {
-        localeProvider.setLocale(locale);
-    }
 }

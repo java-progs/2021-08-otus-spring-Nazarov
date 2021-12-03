@@ -3,6 +3,7 @@ package ru.otus.homework.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.domain.Question;
+import ru.otus.homework.provider.LocaleProvider;
 
 import java.util.List;
 import java.util.Locale;
@@ -13,19 +14,22 @@ public class QuizServiceImpl implements QuizService {
     private final QuestionService questionService;
     private final MessageService messageService;
     private final int answersForPassing;
+    private final LocaleProvider localeProvider;
 
     public QuizServiceImpl(QuestionService questionService, MessageService messageService,
-                           @Value("${quiz.countAnswersForPassing}") int answersForPassing) {
+                           @Value("${quiz.countAnswersForPassing}") int answersForPassing,
+                           LocaleProvider localeProvider) {
         this.questionService = questionService;
         this.messageService = messageService;
         this.answersForPassing = answersForPassing;
+        this.localeProvider = localeProvider;
     }
 
     @Override
     public void startQuiz() {
         int correctAnswers;
 
-        messageService.setLocale(new Locale("ru", "RU"));
+        selectLanguage();
 
         studentGreeting(questionService.getCountQuestions());
 
@@ -34,11 +38,41 @@ public class QuizServiceImpl implements QuizService {
         endQuiz(answersForPassing, correctAnswers);
     }
 
+    private void selectLanguage() {
+        Locale locale;
+
+        messageService.showMessage("strings.choiceLanguage", String.format("%n"));
+        messageService.showMessage("strings.enLanguage", String.format("%d", 1),
+                String.format("%n"));
+        messageService.showMessage("strings.ruLanguage", String.format("%d", 2),
+                String.format("%n"));
+        messageService.showMessage("strings.yourChoice", null);
+        String choice = messageService.readMessage();
+
+        try {
+            int numChoice = Integer.parseInt(choice);
+            switch (numChoice) {
+                case 1:
+                    locale = new Locale("en", "EN");
+                    break;
+                case 2:
+                    locale = new Locale("ru", "RU");
+                    break;
+                default:
+                    locale = localeProvider.getDefaultLocale();
+            }
+        } catch (NumberFormatException e) {
+            locale = localeProvider.getDefaultLocale();
+        }
+
+        localeProvider.setLocale(locale);
+    }
+
     private void studentGreeting(int questionsCount) {
         messageService.showMessage("strings.getName", null);
         String studentName = messageService.readMessage();
         messageService.showMessage("strings.startQuiz",
-                new String[] {studentName, String.format("%s%n", questionsCount)});
+                studentName, String.format("%s%n", questionsCount));
     }
 
     private int quizProcess(List<Question> questionsList) {
@@ -58,8 +92,8 @@ public class QuizServiceImpl implements QuizService {
 
     private void endQuiz(int answersForPassing, int correctAnswers) {
         messageService.showMessage("strings.quizCompleted",
-                new String[] {String.format("%s%n%s", correctAnswers,
-                        getQuizStatus(answersForPassing, correctAnswers))});
+                String.format("%s%n%s", correctAnswers,
+                        getQuizStatus(answersForPassing, correctAnswers)));
     }
 
     private String getQuizStatus(int answersForPassing, int correctAnswers) {
@@ -72,7 +106,7 @@ public class QuizServiceImpl implements QuizService {
 
     public void askQuestion(int questionNumber, Question question) {
         messageService.showMessage("strings.question",
-                new String[] {String.format("%d", questionNumber), String.format("%s%n", question.getQuestion())});
+                String.format("%d", questionNumber), String.format("%s%n", question.getQuestion()));
     }
 
     public boolean getAndCheckAnswer(Question question) {
