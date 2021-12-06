@@ -1,0 +1,11 @@
+Question,answers list,correct answer,locale
+2 + 3 =,,5,en_EN
+A List is a interface?,,yes,en_EN
+What is the Maven?,"1-java compiler, 2-software management tool, 3-java garbage collector",2,en_EN
+2 ^ 3 * 2 =,,16,en_EN
+Spring is a framework?,,yes,en_EN
+2 + 3 =,,5,ru_RU
+List это интерфейс?,,да,ru_RU
+Что такое Maven?,"1-java компилятор, 2-инструмент управления зависимостями, 3-сборщик мусора java",2,ru_RU
+2 ^ 3 * 2 =,,16,ru_RU
+Спринг это фреймворк?,,да,ru_RU

@@ -1,0 +1,20 @@
+spring:
+  messages:
+    basename: i18n/messages
+  banner:
+    location: ./banner_new.txt
+  output:
+    ansi:
+      enabled: always
+
+i18n:
+  locale: "en_EN"
+
+csv:
+  resourcePath: ./questions.csv
+  separator: ","
+  ignoreQuotations: false
+  skipLines: 1
+
+quiz:
+  countAnswersForPassing: 3
