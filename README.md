@@ -5,3 +5,6 @@
 Список домашних заданий:
 * 1 - ./homework-1
 * 2 - ./homework-2
+* 3 - ./homework-3
+* 4 - ./homework-4
+* 5 - ./homework-5
