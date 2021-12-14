@@ -30,18 +30,24 @@ public class GenreDaoJdbc implements GenreDao {
 
     @Override
     public Genre getById(long id) {
-        return jdbc.queryForObject("select * from genre where id = :id",
+        return jdbc.queryForObject("select g.id, g.name from genre g where id = :id",
                 Map.of("id", id), new GenreMapper());
     }
 
     @Override
     public List<Genre> getAll() {
-        return jdbc.query("select * from genre", new GenreMapper());
+        return jdbc.query("select g.id, g.name from genre g", new GenreMapper());
+    }
+
+    @Override
+    public List<Genre> getActiveGenre() {
+        return jdbc.query("select g.id, g.name from genre g inner join book_genre b on g.id = b.genre_id group by g.id",
+                new GenreMapper());
     }
 
     @Override
     public List<Genre> getBookGenres(Book book) {
-        return jdbc.query("select g.* from genre g, book_genre b " +
+        return jdbc.query("select g.id, g.name from genre g, book_genre b " +
                         "where g.id = b.genre_id and b.book_id = :book_id",
                 Map.of("book_id", book.getId()), new GenreMapper()
         );

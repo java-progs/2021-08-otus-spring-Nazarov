@@ -3,10 +3,13 @@ package ru.otus.homework.dao;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import ru.otus.homework.dao.ex.BookAuthorRelation;
+import ru.otus.homework.dao.ex.BookGenreRelation;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Genre;
@@ -16,6 +19,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class BookDaoJdbc implements BookDao {
@@ -39,7 +44,7 @@ public class BookDaoJdbc implements BookDao {
     public Book getById(long id) {
         Book book;
 
-        Book _book = jdbc.queryForObject("select * from book where id = :id",
+        Book _book = jdbc.queryForObject("select b.id, b.name, b.isbn from book b where id = :id",
                 Map.of("id", id), new BookMapper()
         );
 
@@ -52,21 +57,31 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public List<Book> getAll() {
-        List<Book> booksList = new ArrayList<>();
-        List<Book> _booksList = jdbc.query("select * from book", new BookMapper());
-        for (Book book : _booksList) {
-            List<Author> authorsList = authorDao.getBookAuthors(book);
-            List<Genre> genresList = genreDao.getBookGenres(book);
-            booksList.add(new Book(book.getId(), book.getName(), book.getIsbn(), authorsList, genresList));
-        }
+        List<Book> booksList = jdbc.query("select b.id, b.name, b.isbn from book b", new BookMapper());
 
-        return booksList;
+        List<Author> activeAuthors = authorDao.getActiveAuthors();
+        List<Genre> activeGenres = genreDao.getActiveGenre();
+
+        List<BookAuthorRelation> bookAuthorRelations = getAuthorRelations();
+        List<BookGenreRelation> bookGenreRelations = getGenreRelations();
+
+        return mergeBookInfo(booksList, bookAuthorRelations, bookGenreRelations, activeAuthors, activeGenres);
+    }
+
+    private List<BookAuthorRelation> getAuthorRelations() {
+        return jdbc.query("select b.book_id, b.author_id from book_author b order by b.book_id, b.author_id",
+                (rs, i) -> new BookAuthorRelation(rs.getLong(1), rs.getLong(2)));
+    }
+
+    private List<BookGenreRelation> getGenreRelations() {
+        return jdbc.query("select b.book_id, b.genre_id from book_genre b order by b.book_id, b.genre_id",
+                (rs, i) -> new BookGenreRelation(rs.getLong(1), rs.getLong(2)));
     }
 
     @Override
     public List<Book> getBooksByAuthor(long id) {
         List<Book> booksList = new ArrayList<>();
-        List<Book> _booksList = jdbc.query("select b.* from book b, book_author a where b.id = a.book_id and a.author_id = :authorId",
+        List<Book> _booksList = jdbc.query("select b.id, b.name, b.isbn from book b inner join book_author a on b.id = a.book_id where a.author_id = :authorId",
                 Map.of("authorId", id), new BookMapper());
         for (Book book : _booksList) {
             List<Author> authorsList = authorDao.getBookAuthors(book);
@@ -80,8 +95,9 @@ public class BookDaoJdbc implements BookDao {
     @Override
     public List<Book> getBooksByGenre(long id) {
         List<Book> booksList = new ArrayList<>();
-        List<Book> _booksList = jdbc.query("select b.* from book b, book_genre g where b.id = g.book_id and g.genre_id = :genreId",
+        List<Book> _booksList = jdbc.query("select b.id, b.name, b.isbn from book b inner join book_genre g on b.id = g.book_id where g.genre_id = :genreId",
                 Map.of("genreId", id), new BookMapper());
+
         for (Book book : _booksList) {
             List<Author> authorsList = authorDao.getBookAuthors(book);
             List<Genre> genresList = genreDao.getBookGenres(book);
@@ -92,7 +108,6 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    @Transactional
     public Book insert(Book book) {
 
         List<Author> authorsList = book.getAuthorsList();
@@ -108,19 +123,17 @@ public class BookDaoJdbc implements BookDao {
 
         long bookId = keyHolder.getKey().longValue();
 
-        for (Author author : authorsList) {
-            jdbc.update("insert into book_author(book_id, author_id) values (:bookId, :authorId)",
-                    Map.of("bookId", bookId,
-                            "authorId", author.getId())
-            );
-        }
+        SqlParameterSource[] authorBatch = SqlParameterSourceUtils
+                .createBatch(authorsList.stream()
+                        .map((author) -> new BookAuthorRelation(bookId, author.getId())).collect(Collectors.toList()));
+        jdbc.batchUpdate("insert into book_author(book_id, author_id) values (:bookId, :authorId)",
+                    authorBatch);
 
-        for (Genre genre : genresList) {
-            jdbc.update("insert into book_genre(book_id, genre_id) values (:bookId, :genreId)",
-                    Map.of("bookId", bookId,
-                            "genreId", genre.getId())
-            );
-        }
+        SqlParameterSource[] genresBatch = SqlParameterSourceUtils
+                .createBatch(genresList.stream()
+                        .map((genre) -> new BookGenreRelation(bookId, genre.getId())).collect(Collectors.toList()));
+        jdbc.batchUpdate("insert into book_genre(book_id, genre_id) values (:bookId, :genreId)",
+                genresBatch);
 
         long id = keyHolder.getKey().longValue();
 
@@ -128,7 +141,6 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    @Transactional
     public Book update(Book book) {
         MapSqlParameterSource bookParameters = new MapSqlParameterSource();
         bookParameters.addValue("id", book.getId());
@@ -142,28 +154,23 @@ public class BookDaoJdbc implements BookDao {
         jdbc.update("delete from book_author where book_id = :bookId", Map.of("bookId", bookId));
         jdbc.update("delete from book_genre where book_id = :bookId", Map.of("bookId", bookId));
 
-        for (Author author : book.getAuthorsList()) {
-            jdbc.update("insert into book_author(book_id, author_id) values (:bookId, :authorId)",
-                    Map.of("bookId", bookId,
-                            "authorId", author.getId())
-            );
-        }
+        SqlParameterSource[] authorBatch = SqlParameterSourceUtils
+                .createBatch(book.getAuthorsList().stream()
+                        .map((author) -> new BookAuthorRelation(bookId, author.getId())).collect(Collectors.toList()));
+        jdbc.batchUpdate("insert into book_author(book_id, author_id) values (:bookId, :authorId)",
+                authorBatch);
 
-        for (Genre genre : book.getGenresList()) {
-            jdbc.update("insert into book_genre(book_id, genre_id) values (:bookId, :genreId)",
-                    Map.of("bookId", bookId,
-                            "genreId", genre.getId())
-            );
-        }
+        SqlParameterSource[] genresBatch = SqlParameterSourceUtils
+                .createBatch(book.getGenresList().stream()
+                        .map((genre) -> new BookGenreRelation(bookId, genre.getId())).collect(Collectors.toList()));
+        jdbc.batchUpdate("insert into book_genre(book_id, genre_id) values (:bookId, :genreId)",
+                genresBatch);
 
         return getById(book.getId());
     }
 
     @Override
-    //@Transactional
     public int deleteById(long id) {
-        jdbc.update("delete from book_author where book_id = :bookId", Map.of("bookId", id));
-        jdbc.update("delete from book_genre where book_id = :bookId", Map.of("bookId", id));
         return jdbc.update("delete from book where id = :id", Map.of("id", id));
     }
 
@@ -175,7 +182,43 @@ public class BookDaoJdbc implements BookDao {
             String name = resultSet.getString("name");
             String isbn = resultSet.getString("isbn");
 
-            return new Book(id, name, isbn, null, null);
+
+            return new Book(id, name, isbn, new ArrayList<>(), new ArrayList<>());
         }
+    }
+
+    private List<Book> mergeBookInfo(List<Book> books, List<BookAuthorRelation> bookAuthorRelations,
+                               List<BookGenreRelation> bookGenreRelations, List<Author> authors, List<Genre> genres) {
+
+        Map<Long, List<Long>> bookAuthorsMap = bookAuthorRelations.stream()
+                .collect(Collectors.groupingBy(BookAuthorRelation::getBookId,
+                        Collectors.mapping(BookAuthorRelation::getAuthorId, Collectors.toList())));
+
+        Map<Long, List<Long>> bookGenresMap = bookGenreRelations.stream()
+                .collect(Collectors.groupingBy(BookGenreRelation::getBookId,
+                        Collectors.mapping(BookGenreRelation::getGenreId, Collectors.toList())));
+
+        Map<Long, Author> authorsMap = authors.stream().collect(Collectors.toMap(Author::getId, Function.identity()));
+        Map<Long, Genre> genresMap = genres.stream().collect(Collectors.toMap(Genre::getId, Function.identity()));
+
+
+        books.forEach((book) -> {
+            long bookId = book.getId();
+
+            bookAuthorsMap.get(bookId).forEach((authorId) -> {
+                if (authorsMap.containsKey(authorId)) {
+                    book.getAuthorsList().add(authorsMap.get(authorId));
+                }
+            });
+
+            bookGenresMap.get(bookId).forEach((genreId) -> {
+                if (genresMap.containsKey(genreId)) {
+                    book.getGenresList().add(genresMap.get(genreId));
+                }
+            });
+
+        });
+
+        return books;
     }
 }

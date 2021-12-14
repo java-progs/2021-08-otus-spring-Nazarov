@@ -30,18 +30,24 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public Author getById(long id) {
-        return jdbc.queryForObject("select * from author where id = :id",
+        return jdbc.queryForObject("select a.id, a.surname, a.name, a.patronymic from author a where id = :id",
                 Map.of("id", id), new AuthorMapper());
     }
 
     @Override
     public List<Author> getAll() {
-        return jdbc.query("select * from author", new AuthorMapper());
+        return jdbc.query("select a.id, a.surname, a.name, a.patronymic from author a", new AuthorMapper());
+    }
+
+    @Override
+    public List<Author> getActiveAuthors() {
+        return jdbc.query("select a.id, a.surname, a.name, a.patronymic from author a inner join book_author b " +
+                "on a.id = b.author_id group by a.id", new AuthorMapper());
     }
 
     @Override
     public List<Author> getBookAuthors(Book book) {
-        return jdbc.query("select a.* from author a, book_author b " +
+        return jdbc.query("select a.id, a.surname, a.name, a.patronymic from author a, book_author b " +
                 "where a.id = b.author_id and b.book_id = :book_id",
                 Map.of("book_id", book.getId()), new AuthorMapper());
     }

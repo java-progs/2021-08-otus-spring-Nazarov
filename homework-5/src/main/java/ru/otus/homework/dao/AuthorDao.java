@@ -13,6 +13,8 @@ public interface AuthorDao {
 
     List<Author> getAll();
 
+    List<Author> getActiveAuthors();
+
     List<Author> getBookAuthors(Book book);
 
     Author insert(Author author);

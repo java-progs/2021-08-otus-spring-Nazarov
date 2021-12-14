@@ -2,6 +2,7 @@ package ru.otus.homework.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.dao.AuthorDao;
 import ru.otus.homework.dao.BookDao;
 import ru.otus.homework.dao.GenreDao;
@@ -88,6 +89,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public boolean updateBook(Book book) {
         Book updatedBook;
 
@@ -97,10 +99,11 @@ public class BookServiceImpl implements BookService {
             return false;
         }
 
-        return book.equals(updatedBook) ? true : false;
+        return book.equals(updatedBook);
     }
 
     @Override
+    @Transactional
     public boolean updateBook(long id, String name, String isbn, Long[] authorsIds, Long[] genresIds) {
         List<Author> authorsList = new ArrayList<>();
         List<Genre> genresList = new ArrayList<>();
@@ -121,6 +124,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public boolean deleteBookById(long id) {
         try {
             bookDao.deleteById(id);

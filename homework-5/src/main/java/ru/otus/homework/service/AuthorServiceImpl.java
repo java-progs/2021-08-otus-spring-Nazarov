@@ -57,7 +57,7 @@ public class AuthorServiceImpl implements AuthorService {
             return false;
         }
 
-        return author.equals(updatedAuthor) ? true : false;
+        return author.equals(updatedAuthor);
     }
 
     @Override
@@ -70,6 +70,6 @@ public class AuthorServiceImpl implements AuthorService {
             return false;
         }
 
-        return deletedRows == 1 ? true : false;
+        return deletedRows == 1;
     }
 }

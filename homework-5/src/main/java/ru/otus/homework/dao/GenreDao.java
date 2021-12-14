@@ -12,6 +12,8 @@ public interface GenreDao {
 
     List<Genre> getAll();
 
+    List<Genre> getActiveGenre();
+
     List<Genre> getBookGenres(Book book);
 
     Genre insert(Genre genre);

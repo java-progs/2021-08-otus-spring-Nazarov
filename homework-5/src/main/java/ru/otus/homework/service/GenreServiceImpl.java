@@ -36,7 +36,6 @@ public class GenreServiceImpl implements GenreService {
         }
     }
 
-
     @Override
     public boolean addGenre(Genre genre) {
         try {
@@ -58,7 +57,7 @@ public class GenreServiceImpl implements GenreService {
             return false;
         }
 
-        return genre.equals(updatedGenre) ? true : false;
+        return genre.equals(updatedGenre);
     }
 
     @Override
@@ -71,6 +70,6 @@ public class GenreServiceImpl implements GenreService {
             return false;
         }
 
-        return deletedRows == 1 ? true : false;
+        return deletedRows == 1;
     }
 }
