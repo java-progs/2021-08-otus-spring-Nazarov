@@ -30,7 +30,7 @@ class BookServiceImplTest {
     private final int EXPECTED_BOOK_COUNT_FOR_GENRE = 2;
 
     @Autowired
-    BookService bookService;
+    private BookService bookService;
 
     @DisplayName("возвращать верное количество книг")
     @Test

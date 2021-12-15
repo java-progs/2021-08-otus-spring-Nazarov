@@ -4,7 +4,7 @@ import org.jline.reader.LineReader;
 
 public class InputReader {
 
-    private LineReader lineReader;
+    private final LineReader lineReader;
 
     public InputReader(LineReader lineReader) {
         this.lineReader = lineReader;

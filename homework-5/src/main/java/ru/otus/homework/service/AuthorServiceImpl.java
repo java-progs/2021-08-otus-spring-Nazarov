@@ -2,6 +2,7 @@ package ru.otus.homework.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.dao.AuthorDao;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.exception.RecordNotFoundException;
@@ -37,6 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public boolean addAuthor(Author author) {
         try {
             dao.insert(author);
@@ -48,6 +50,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public boolean updateAuthor(Author author) {
         Author updatedAuthor;
 
@@ -61,6 +64,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public boolean deleteAuthorById(long id) {
         int deletedRows = 0;
 

@@ -18,9 +18,7 @@ public interface BookDao {
 
     Book insert(Book book);
 
-    @Transactional
     Book update(Book book);
 
-    @Transactional
     int deleteById(long id);
 }

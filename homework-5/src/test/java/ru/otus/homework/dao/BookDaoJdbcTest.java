@@ -46,7 +46,7 @@ class BookDaoJdbcTest {
         expectedBook.setId(actualBook.getId());
 
         assertThat(actualBook)
-                .usingRecursiveComparison().isEqualTo(expectedBook);
+                .usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedBook);
     }
 
     @DisplayName("Возвращать запись по ее id")
@@ -57,7 +57,7 @@ class BookDaoJdbcTest {
                 List.of(new Genre(2, "Programming"), new Genre(3, "Java-book")));
         val actualBook = dao.getById(expectedBook.getId());
         assertThat(actualBook)
-                .usingRecursiveComparison().isEqualTo(expectedBook);
+                .usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedBook);
     }
 
     @DisplayName("Возвращает список книг автора")
@@ -104,7 +104,7 @@ class BookDaoJdbcTest {
 
         var actualBook = dao.getById(expectedBook.getId());
         assertThat(actualBook)
-                .usingRecursiveComparison().isEqualTo(expectedBook);
+                .usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedBook);
 
 
         expectedBook = new Book(3, "Kotlin in action", null,
@@ -118,7 +118,7 @@ class BookDaoJdbcTest {
 
         actualBook = dao.update(expectedBook);
         assertThat(actualBook)
-                .usingRecursiveComparison().isEqualTo(expectedBook);
+                .usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedBook);
     }
 
     @DisplayName("Удаляет запись из БД")

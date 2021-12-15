@@ -57,6 +57,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public boolean addBook(Book book) {
         try {
             bookDao.insert(book);
@@ -68,6 +69,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public boolean addBook(String name, String isbn, Long[] authorsIds, Long[] genresIds) {
 
         List<Author> authorsList = new ArrayList<>();

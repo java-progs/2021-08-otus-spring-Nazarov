@@ -2,6 +2,7 @@ package ru.otus.homework.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.dao.GenreDao;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exception.RecordNotFoundException;
@@ -37,6 +38,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public boolean addGenre(Genre genre) {
         try {
             dao.insert(genre);
@@ -48,6 +50,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public boolean updateGenre(Genre genre) {
         Genre updatedGenre;
 
@@ -61,6 +64,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public boolean deleteGenreById(long id) {
         int deletedRows = 0;
 
