@@ -98,7 +98,7 @@ public class BookCommands {
     }
 
     @ShellMethod(value = "update book", key = {"update-book"})
-    public String updateAuthor() {
+    public String updateBook() {
         long id = -1;
         String name;
         String isbn;
@@ -142,7 +142,7 @@ public class BookCommands {
         if (bookService.updateBook(id, name, isbn, authorsArray, genresArray)) {
             return shellHelper.getSuccessMessage("Book updated successful");
         } else {
-            return shellHelper.getErrorMessage("Error updating author");
+            return shellHelper.getErrorMessage("Error updating book");
         }
     }
 

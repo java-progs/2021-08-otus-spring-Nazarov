@@ -86,17 +86,10 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public List<Book> getBooksByGenre(long id) {
-        List<Book> booksList = new ArrayList<>();
-        List<Book> booksResult = jdbc.query("select b.id, b.name, b.isbn from book b inner join book_genre g on b.id = g.book_id where g.genre_id = :genreId",
+        List<Book> booksList = jdbc.query("select b.id, b.name, b.isbn from book b inner join book_genre g on b.id = g.book_id where g.genre_id = :genreId",
                 Map.of("genreId", id), new BookMapper());
 
-        for (Book book : booksResult) {
-            List<Author> authorsList = authorDao.getBookAuthors(book);
-            List<Genre> genresList = genreDao.getBookGenres(book);
-            booksList.add(new Book(book.getId(), book.getName(), book.getIsbn(), authorsList, genresList));
-        }
-
-        return booksList;
+        return mergeBookInfo(booksList);
     }
 
     @Override

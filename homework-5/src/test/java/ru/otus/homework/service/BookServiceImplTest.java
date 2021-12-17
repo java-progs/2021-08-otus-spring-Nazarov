@@ -20,14 +20,14 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 class BookServiceImplTest {
 
-    private final int EXPECTED_BOOK_COUNT = 3;
-    private final int EXPECTED_BOOK_ID = 2;
+    private static final int EXPECTED_BOOK_COUNT = 3;
+    private static final int EXPECTED_BOOK_ID = 2;
 
-    private final int AUTHOR_FOR_SEARCH_BOOK = 2;
-    private final int EXPECTED_BOOK_COUNT_FOR_AUTHOR = 1;
+    private static final int AUTHOR_FOR_SEARCH_BOOK = 2;
+    private static final int EXPECTED_BOOK_COUNT_FOR_AUTHOR = 1;
 
-    private final int GENRE_FOR_SEARCH_BOOK = 2;
-    private final int EXPECTED_BOOK_COUNT_FOR_GENRE = 2;
+    private static final int GENRE_FOR_SEARCH_BOOK = 2;
+    private static final int EXPECTED_BOOK_COUNT_FOR_GENRE = 2;
 
     @Autowired
     private BookService bookService;
