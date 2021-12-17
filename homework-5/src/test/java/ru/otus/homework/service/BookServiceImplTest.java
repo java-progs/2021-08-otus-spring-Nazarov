@@ -142,14 +142,6 @@ class BookServiceImplTest {
                 new Long[] {2L, 3L})).isTrue();
     }
 
-    @DisplayName("обновить запись о книге через список полей")
-    @Test
-    void shouldUpdatedBookByFieldsNew() {
-        assertThat(bookService.updateBook(2, "Spring boot 2", null,
-                new Long[] {2L},
-                new Long[] {2L, 3L, 4L})).isTrue();
-    }
-
     @DisplayName("не обновить запись о книге с несуществующим автором через список полей")
     @Test
     void shouldNotUpdatedBookByFieldsWrongAuthor() {

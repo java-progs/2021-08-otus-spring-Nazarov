@@ -19,19 +19,16 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public int getCountGenres() {
         return dao.count();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Genre> getAllGenres() {
         return dao.getAll();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Genre getGenreById(long id) throws RecordNotFoundException {
         try {
             return dao.getById(id);

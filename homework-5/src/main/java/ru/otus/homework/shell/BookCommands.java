@@ -142,7 +142,7 @@ public class BookCommands {
         if (bookService.updateBook(id, name, isbn, authorsArray, genresArray)) {
             return shellHelper.getSuccessMessage("Book updated successful");
         } else {
-            return shellHelper.getErrorMessage("Error updating book");
+            return shellHelper.getErrorMessage("Error updating author");
         }
     }
 
