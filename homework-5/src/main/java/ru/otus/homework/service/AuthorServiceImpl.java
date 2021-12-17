@@ -19,16 +19,19 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getCountAuthors() {
         return dao.count();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Author> getAllAuthors() {
         return dao.getAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Author getAuthorById(long id) throws RecordNotFoundException {
         try {
             return dao.getById(id);

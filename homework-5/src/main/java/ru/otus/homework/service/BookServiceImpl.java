@@ -28,16 +28,19 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getCountBooks() {
         return bookDao.count();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> getAllBooks() {
         return bookDao.getAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Book getBookById(long id) throws RecordNotFoundException {
         try {
             return bookDao.getById(id);
@@ -47,11 +50,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> getBooksByAuthor(long authorId) {
         return bookDao.getBooksByAuthor(authorId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> getBooksByGenre(long genreId) {
         return bookDao.getBooksByGenre(genreId);
     }
