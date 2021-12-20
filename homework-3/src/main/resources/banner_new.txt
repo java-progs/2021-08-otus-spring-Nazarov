@@ -1,0 +1,9 @@
+${AnsiColor.MAGENTA}
+${AnsiBackground.BRIGHT_CYAN}                                                                                                                                            ${AnsiBackground.DEFAULT}
+${AnsiBackground.BRIGHT_CYAN}    ███    ███ ██    ██ ██      ████████ ██ ██      ██ ███    ██  ██████  ██    ██  █████  ██          ████████ ███████ ███████ ████████    ${AnsiBackground.DEFAULT}
+${AnsiBackground.BRIGHT_CYAN}    ████  ████ ██    ██ ██         ██    ██ ██      ██ ████   ██ ██       ██    ██ ██   ██ ██             ██    ██      ██         ██       ${AnsiBackground.DEFAULT}
+${AnsiBackground.BRIGHT_CYAN}    ██ ████ ██ ██    ██ ██         ██    ██ ██      ██ ██ ██  ██ ██   ███ ██    ██ ███████ ██             ██    █████   ███████    ██       ${AnsiBackground.DEFAULT}
+${AnsiBackground.BRIGHT_CYAN}    ██  ██  ██ ██    ██ ██         ██    ██ ██      ██ ██  ██ ██ ██    ██ ██    ██ ██   ██ ██             ██    ██           ██    ██       ${AnsiBackground.DEFAULT}
+${AnsiBackground.BRIGHT_CYAN}    ██      ██  ██████  ███████    ██    ██ ███████ ██ ██   ████  ██████   ██████  ██   ██ ███████        ██    ███████ ███████    ██       ${AnsiBackground.DEFAULT}
+${AnsiBackground.BRIGHT_CYAN}                                                                                                                                            ${AnsiBackground.DEFAULT}
+${AnsiColor.DEFAULT}
