@@ -109,9 +109,8 @@ public class CommentCommands {
 
     public String getCommentDescription(Comment comment) {
         val description = new StringBuilder();
-        description.append(String.format("Id: %s, Date: %s, Username: %s, Text: %s, BookId: %s, BookName: %s%n",
-                comment.getId(), shellHelper.getFormatTime(comment.getTime()), comment.getAuthor(), comment.getText(),
-                comment.getBook().getId(), comment.getBook().getName()));
+        description.append(String.format("Id: %s, Date: %s, Username: %s, Text: %s%n",
+                comment.getId(), shellHelper.getFormatTime(comment.getTime()), comment.getAuthor(), comment.getText()));
 
         return description.toString();
     }

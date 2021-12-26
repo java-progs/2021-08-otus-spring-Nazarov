@@ -44,13 +44,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public Book getBookById(long id) throws RecordNotFoundException {
-        val optionalBook = bookRepository.getById(id);
-
-        if (optionalBook.isPresent()) {
-            return optionalBook.get();
-        } else {
-            throw new RecordNotFoundException(String.format("Not found book with id = %d", id));
-        }
+        return bookRepository.getById(id)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found book with id = %d", id)));
     }
 
     @Override

@@ -33,13 +33,8 @@ public class GenreServiceImpl implements GenreService {
     @Override
     @Transactional(readOnly = true)
     public Genre getGenreById(long id) throws RecordNotFoundException {
-        val optionalGenre = repository.getById(id);
-
-        if (optionalGenre.isPresent()) {
-            return optionalGenre.get();
-        } else {
-            throw new RecordNotFoundException(String.format("Not found genre with id = %d", id));
-        }
+        return repository.getById(id)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found genre with id = %d", id)));
     }
 
     @Override

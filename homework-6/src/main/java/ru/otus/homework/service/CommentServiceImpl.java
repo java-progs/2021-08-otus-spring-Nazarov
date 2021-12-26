@@ -37,13 +37,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public Comment getCommentById(long id) throws RecordNotFoundException {
-        val optionalComment = commentRepository.getById(id);
-
-        if (optionalComment.isPresent()) {
-            return optionalComment.get();
-        } else {
-            throw new RecordNotFoundException(String.format("Not found comment with id = %d", id));
-        }
+        return commentRepository.getById(id)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found comment with id = %d", id)));
     }
 
     @Override

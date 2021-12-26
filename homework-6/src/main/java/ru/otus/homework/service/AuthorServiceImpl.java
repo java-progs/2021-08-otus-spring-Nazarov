@@ -33,13 +33,8 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     @Transactional(readOnly = true)
     public Author getAuthorById(long id) throws RecordNotFoundException {
-        val optionalAuthor = repository.getById(id);
-
-        if (optionalAuthor.isPresent()) {
-             return optionalAuthor.get();
-        } else {
-            throw new RecordNotFoundException(String.format("Not found author with id = %d", id));
-        }
+        return repository.getById(id)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found author with id = %d", id)));
 
     }
 
