@@ -10,8 +10,6 @@ import ru.otus.homework.service.CommentService;
 import ru.otus.homework.shell.utils.InputReader;
 import ru.otus.homework.shell.utils.ShellHelper;
 
-import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 @ShellComponent
@@ -85,7 +83,7 @@ public class CommentCommands {
     }
 
     @ShellMethod(value = "update comment", key = {"update-comment"})
-    public String updateGenre() {
+    public String updateComment() {
         long id = -1;
         String text;
 
@@ -111,9 +109,10 @@ public class CommentCommands {
 
     public String getCommentDescription(Comment comment) {
         val description = new StringBuilder();
-        description.append(String.format("Id: %s, Date: %s, Username: %s, Text: %s%n",
-                comment.getId(), shellHelper.getFormatTime(comment.getTime()), comment.getAuthor(), comment.getText()));
+        description.append(String.format("Id: %s, Date: %s, Username: %s, Text: %s, BookId: %s, BookName: %s%n",
+                comment.getId(), shellHelper.getFormatTime(comment.getTime()), comment.getAuthor(), comment.getText(),
+                comment.getBook().getId(), comment.getBook().getName()));
 
-        return comment.toString();
+        return description.toString();
     }
 }

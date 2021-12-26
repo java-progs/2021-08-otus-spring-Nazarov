@@ -14,9 +14,8 @@ import ru.otus.homework.service.CommentService;
 import ru.otus.homework.shell.utils.InputReader;
 import ru.otus.homework.shell.utils.ShellHelper;
 
-import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,20 +39,25 @@ public class BookCommands {
     @ShellMethod(value = "show books list", key = {"list-books"})
     public String getBooksList() {
         val booksList = bookService.getAllBooks();
+        val commentsList = commentService.getAllComments();
+
         return String.format("Books list:%n%s",
-                booksList.stream().map(b -> getBookDescription(b)).collect(Collectors.joining("\n")));
+                booksList.stream().map(b -> getBookDescription(b, commentsList)).collect(Collectors.joining("\n")));
     }
 
     @ShellMethod(value = "get book by id", key = {"get-book"})
     public String getBookById(Long id) {
         Book book;
+        List<Comment> commentsList;
+
         try {
             book = bookService.getBookById(id);
+            commentsList = commentService.getBookComments(id);
         } catch (RecordNotFoundException e) {
             return shellHelper.getInfoMessage("Book not found");
         }
 
-        return String.format("Book: %s", getBookDescription(book));
+        return String.format("Book: %s", getBookDescription(book, commentsList));
     }
 
     @ShellMethod(value = "add book", key = {"add-book"})
@@ -178,7 +182,7 @@ public class BookCommands {
         return idList.toArray(new Long[idList.size()]);
     }
 
-    private String getBookDescription(Book book) {
+    private String getBookDescription(Book book, List<Comment> commentsList) {
         var description = new StringBuilder();
 
         description.append(String.format("Id: %d%n", book.getId()));
@@ -202,12 +206,15 @@ public class BookCommands {
             description.append(String.format("   Name: %s%n", g.getName()));
         }
 
-        var commentsList = commentService.getBookComments(book.getId());
+        val bookId = book.getId();
+        val booksComments = commentsList.stream()
+                .filter(c -> c.getBook().getId() == bookId)
+                .collect(Collectors.toList());
 
-        if(commentsList.size() > 0) {
+        if(booksComments.size() > 0) {
             description.append(String.format("Comments:%n"));
 
-            for (Comment c : commentsList) {
+            for (Comment c : booksComments) {
                 description.append(String.format("   Date: %s, Author: %s, Text: %s%n", shellHelper.getFormatTime(c.getTime()), c.getAuthor(), c.getText()));
             }
         }

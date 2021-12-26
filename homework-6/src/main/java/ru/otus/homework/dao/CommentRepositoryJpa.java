@@ -27,12 +27,24 @@ public class CommentRepositoryJpa implements CommentRepository {
 
     @Override
     public Optional<Comment> getById(long id) {
-        return Optional.ofNullable(em.find(Comment.class, id));
+        val query = em.createQuery(
+                "select c from Comment c join fetch c.book where c.id = :id",
+                Comment.class);
+        query.setParameter("id", id);
+        Comment result;
+
+        try {
+            result = query.getSingleResult();
+        } catch (Exception e) {
+            result = null;
+        }
+
+        return Optional.ofNullable(result);
     }
 
     @Override
     public List<Comment> getAll() {
-        val query = em.createQuery("select c from Comment c", Comment.class);
+        val query = em.createQuery("select c from Comment c join fetch c.book", Comment.class);
         return query.getResultList();
     }
 

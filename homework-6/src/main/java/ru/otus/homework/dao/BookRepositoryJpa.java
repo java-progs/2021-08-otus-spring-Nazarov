@@ -15,13 +15,8 @@ public class BookRepositoryJpa implements BookRepository {
     @PersistenceContext
     private final EntityManager em;
 
-    private final AuthorRepository authorRepository;
-    private final GenreRepository genreRepository;
-
-    public BookRepositoryJpa(EntityManager em, AuthorRepository authorDao, GenreRepository genreDao) {
+    public BookRepositoryJpa(EntityManager em) {
         this.em = em;
-        this.authorRepository = authorDao;
-        this.genreRepository = genreDao;
     }
 
     @Override
