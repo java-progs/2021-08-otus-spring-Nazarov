@@ -9,3 +9,4 @@
 * 4 - ./homework-4
 * 5 - ./homework-5
 * 6 - ./homework-6
+* 7 - ./homework-7
