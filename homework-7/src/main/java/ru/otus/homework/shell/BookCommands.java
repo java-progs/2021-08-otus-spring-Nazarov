@@ -42,7 +42,7 @@ public class BookCommands {
         val commentsList = commentService.getAllComments();
 
         return String.format("Books list:%n%s",
-                booksList.stream().map(b -> getBookDescription(b, commentsList)).collect(Collectors.joining("\n")));
+                booksList.stream().map(b -> shellHelper.getBookDescription(b, commentsList)).collect(Collectors.joining("\n")));
     }
 
     @ShellMethod(value = "get book by id", key = {"get-book"})
@@ -57,7 +57,7 @@ public class BookCommands {
             return shellHelper.getInfoMessage("Book not found");
         }
 
-        return String.format("Book: %s", getBookDescription(book, commentsList));
+        return String.format("Book: %s", shellHelper.getBookDescription(book, commentsList));
     }
 
     @ShellMethod(value = "add book", key = {"add-book"})
@@ -183,43 +183,4 @@ public class BookCommands {
         return idList.toArray(new Long[idList.size()]);
     }
 
-    private String getBookDescription(Book book, List<Comment> commentsList) {
-        var description = new StringBuilder();
-
-        description.append(String.format("Id: %d%n", book.getId()));
-        description.append(String.format("Name: %s%n", book.getName()));
-        description.append(String.format("ISBN: %s%n", book.getIsbn() == null ? "-" : book.getIsbn()));
-        description.append(String.format("Authors:%n"));
-
-        for (Author a : book.getAuthorsList()) {
-            description.append(String.format("   Surname: %s, Name: %s", a.getSurname(), a.getName()));
-
-            if (a.getPatronymic() != null) {
-                description.append(String.format(", Patronymic: %s", a.getPatronymic()));
-            }
-
-            description.append(String.format("%n"));
-        }
-
-        description.append(String.format("Genres:%n"));
-
-        for (Genre g : book.getGenresList()) {
-            description.append(String.format("   Name: %s%n", g.getName()));
-        }
-
-        val bookId = book.getId();
-        val booksComments = commentsList.stream()
-                .filter(c -> c.getBook().getId() == bookId)
-                .collect(Collectors.toList());
-
-        if(booksComments.size() > 0) {
-            description.append(String.format("Comments:%n"));
-
-            for (Comment c : booksComments) {
-                description.append(String.format("   Date: %s, Author: %s, Text: %s%n", shellHelper.getFormatTime(c.getTime()), c.getAuthor(), c.getText()));
-            }
-        }
-
-        return description.toString();
-    }
 }

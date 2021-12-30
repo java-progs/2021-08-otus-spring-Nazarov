@@ -1,11 +1,18 @@
 package ru.otus.homework.shell.utils;
 
+import lombok.val;
 import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import ru.otus.homework.domain.Author;
+import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Comment;
+import ru.otus.homework.domain.Genre;
 
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShellHelper {
 
@@ -71,6 +78,76 @@ public class ShellHelper {
     public void print(String message) {
         terminal.writer().println(message);
         terminal.flush();
+    }
+
+    public String getAuthorDescription(Author author) {
+        var description = new StringBuilder();
+
+        description.append(String.format("   Id: %s, Surname: %s, Name: %s", author.getId(), author.getSurname(), author.getName()));
+
+        if (author.getPatronymic() != null) {
+            description.append(String.format(", Patronymic: %s", author.getPatronymic()));
+        }
+
+        description.append(String.format("%n"));
+
+        return description.toString();
+    }
+
+    public String getBookDescription(Book book, List<Comment> commentsList) {
+        var description = new StringBuilder();
+
+        description.append(String.format("Id: %d%n", book.getId()));
+        description.append(String.format("Name: %s%n", book.getName()));
+        description.append(String.format("ISBN: %s%n", book.getIsbn() == null ? "-" : book.getIsbn()));
+        description.append(String.format("Authors:%n"));
+
+        for (Author a : book.getAuthorsList()) {
+            description.append(String.format("   Surname: %s, Name: %s", a.getSurname(), a.getName()));
+
+            if (a.getPatronymic() != null) {
+                description.append(String.format(", Patronymic: %s", a.getPatronymic()));
+            }
+
+            description.append(String.format("%n"));
+        }
+
+        description.append(String.format("Genres:%n"));
+
+        for (Genre g : book.getGenresList()) {
+            description.append(String.format("   Name: %s%n", g.getName()));
+        }
+
+        val bookId = book.getId();
+        val booksComments = commentsList.stream()
+                .filter(c -> c.getBook().getId() == bookId)
+                .collect(Collectors.toList());
+
+        if(booksComments.size() > 0) {
+            description.append(String.format("Comments:%n"));
+
+            for (Comment c : booksComments) {
+                description.append(String.format("   Date: %s, Author: %s, Text: %s%n", getFormatTime(c.getTime()), c.getAuthor(), c.getText()));
+            }
+        }
+
+        return description.toString();
+    }
+
+    public String getCommentDescription(Comment comment) {
+        val description = new StringBuilder();
+        description.append(String.format("Id: %s, Date: %s, Username: %s, Text: %s%n",
+                comment.getId(), getFormatTime(comment.getTime()), comment.getAuthor(), comment.getText()));
+
+        return description.toString();
+    }
+
+    public String getGenreDescription(Genre genre) {
+        val description = new StringBuilder();
+
+        description.append(String.format("Id: %s, Name:%s%n", genre.getId(), genre.getName()));
+
+        return description.toString();
     }
 
     public String getFormatTime(Timestamp timestamp) {

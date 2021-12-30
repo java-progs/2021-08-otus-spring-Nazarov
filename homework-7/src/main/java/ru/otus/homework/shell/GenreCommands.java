@@ -29,7 +29,7 @@ public class GenreCommands {
     public String getGenresList() {
         val genresList = genreService.getAllGenres();
         return String.format("Genres list:%n%s",
-                genresList.stream().map(g -> getGenreDescription(g)).collect(Collectors.joining("\n")));
+                genresList.stream().map(g -> shellHelper.getGenreDescription(g)).collect(Collectors.joining("\n")));
     }
 
     @ShellMethod(value = "get genre by id", key = {"get-genre"})
@@ -41,7 +41,7 @@ public class GenreCommands {
             return shellHelper.getInfoMessage("Genre not found");
         }
 
-        return String.format("Genre: %s", getGenreDescription(genre));
+        return String.format("Genre: %s", shellHelper.getGenreDescription(genre));
     }
 
     @ShellMethod(value = "add genre", key = {"add-genre"})
@@ -98,11 +98,4 @@ public class GenreCommands {
         }
     }
 
-    private String getGenreDescription(Genre genre) {
-        val description = new StringBuilder();
-
-        description.append(String.format("Id: %s, Name:%s%n", genre.getId(), genre.getName()));
-
-        return description.toString();
-    }
 }

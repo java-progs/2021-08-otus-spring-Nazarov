@@ -29,7 +29,7 @@ public class CommentCommands {
     public String getCommentsList() {
         val commentsList = commentService.getAllComments();
         return String.format("Comments list:%n%s",
-                commentsList.stream().map(c -> getCommentDescription(c)).collect(Collectors.joining("\n")));
+                commentsList.stream().map(c -> shellHelper.getCommentDescription(c)).collect(Collectors.joining("\n")));
     }
 
     @ShellMethod(value = "get comment by id", key = {"get-comment"})
@@ -41,7 +41,7 @@ public class CommentCommands {
             return shellHelper.getInfoMessage("Comment not found");
         }
 
-        return String.format("Comment: %s", getCommentDescription(comment));
+        return String.format("Comment: %s", shellHelper.getCommentDescription(comment));
     }
 
     @ShellMethod(value = "add comment", key = {"add-comment"})
@@ -108,11 +108,4 @@ public class CommentCommands {
         }
     }
 
-    public String getCommentDescription(Comment comment) {
-        val description = new StringBuilder();
-        description.append(String.format("Id: %s, Date: %s, Username: %s, Text: %s%n",
-                comment.getId(), shellHelper.getFormatTime(comment.getTime()), comment.getAuthor(), comment.getText()));
-
-        return description.toString();
-    }
 }

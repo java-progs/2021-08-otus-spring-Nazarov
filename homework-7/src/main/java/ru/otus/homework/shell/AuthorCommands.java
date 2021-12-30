@@ -29,7 +29,7 @@ public class AuthorCommands {
     public String getAuthorsList() {
         val authorsList = authorService.getAllAuthors();
         return String.format("Authors list:%n%s",
-                authorsList.stream().map(a -> getAuthorDescription(a)).collect(Collectors.joining("\n")));
+                authorsList.stream().map(a -> shellHelper.getAuthorDescription(a)).collect(Collectors.joining("\n")));
     }
 
     @ShellMethod(value = "get author by id", key = {"get-author"})
@@ -41,7 +41,7 @@ public class AuthorCommands {
             return shellHelper.getInfoMessage("Author not found");
         }
 
-        return String.format("Author: %s", getAuthorDescription(author));
+        return String.format("Author: %s", shellHelper.getAuthorDescription(author));
     }
 
     @ShellMethod(value = "add author", key = {"add-author"})
@@ -120,19 +120,5 @@ public class AuthorCommands {
         } else {
             return shellHelper.getErrorMessage("Error updating author");
         }
-    }
-
-    public String getAuthorDescription(Author author) {
-        var description = new StringBuilder();
-
-        description.append(String.format("   Id: %s, Surname: %s, Name: %s", author.getId(), author.getSurname(), author.getName()));
-
-        if (author.getPatronymic() != null) {
-            description.append(String.format(", Patronymic: %s", author.getPatronymic()));
-        }
-
-        description.append(String.format("%n"));
-
-        return description.toString();
     }
 }
