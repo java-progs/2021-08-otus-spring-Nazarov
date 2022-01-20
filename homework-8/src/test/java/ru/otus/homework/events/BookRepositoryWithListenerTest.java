@@ -17,7 +17,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
-@ComponentScan({"ru.otus.homework.repositories"})
 @DisplayName("Репозиторий для работы с книгами при наличии листенеров в контексте ")
 @Import(MongoBookCascadeSaveEventsListener.class)
 public class BookRepositoryWithListenerTest {

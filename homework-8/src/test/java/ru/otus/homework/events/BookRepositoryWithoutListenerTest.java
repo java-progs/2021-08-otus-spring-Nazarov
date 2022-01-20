@@ -18,13 +18,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataMongoTest
-@ComponentScan({"ru.otus.homework.repositories"})
 @DisplayName("Репозиторий для работы с книгами при отсутствии листенеров в контексте ")
-@EnableConfigurationProperties
 public class BookRepositoryWithoutListenerTest {
 
     @Autowired
-    BookRepository repository;
+    private BookRepository repository;
 
     @DisplayName("должен бросать MappingException во время сохранения книги с отсутсвующими в БД авторами или жанрами")
     @Test

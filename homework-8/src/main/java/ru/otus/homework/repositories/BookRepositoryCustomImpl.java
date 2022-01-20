@@ -37,6 +37,18 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
     }
 
     @Override
+    public Long getCountByAuthor(String authorId) {
+        val query = Query.query(Criteria.where("authorsList.$id").is(new ObjectId(authorId)));
+        return mongoTemplate.count(query, Book.class);
+    }
+
+    @Override
+    public Long getCountByGenre(String genreId) {
+        val query = Query.query(Criteria.where("genresList.$id").is(new ObjectId(genreId)));
+        return mongoTemplate.count(query, Book.class);
+    }
+
+    @Override
     public boolean addComment(String bookId, Comment comment) {
         val bookQuery = Query.query(Criteria.where("_id").is(new ObjectId(bookId)));
         val update = new Update().push("commentsList", comment);

@@ -18,9 +18,7 @@ import ru.otus.homework.repositories.AuthorRepository;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 @DataMongoTest
-@ComponentScan({"ru.otus.homework.repositories"})
 @DisplayName("Репозиторий для работы с авторами при наличии листенера в контексте ")
-@EnableConfigurationProperties
 @Import(MongoAuthorDeleteEventsListener.class)
 public class AuthorRepositoryWithListenerTest {
 

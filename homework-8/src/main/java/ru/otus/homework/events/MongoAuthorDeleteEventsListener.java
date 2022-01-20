@@ -19,18 +19,15 @@ import ru.otus.homework.repositories.BookRepository;
 @RequiredArgsConstructor
 public class MongoAuthorDeleteEventsListener extends AbstractMongoEventListener<Author> {
 
-    private final AuthorRepository authorRepository;
     private final BookRepository bookRepository;
-    private final MongoTemplate template;
 
     @Override
     public void onBeforeDelete(BeforeDeleteEvent<Author> event) {
         super.onBeforeDelete(event);
         val source = event.getSource();
         val id = source.get("_id").toString();
+        val countBook = bookRepository.getCountByAuthor(id);
 
-        val query = Query.query(Criteria.where("authorsList.$id").is(new ObjectId(id)));
-        val countBook = template.count(query, Book.class);
         if (countBook > 0) {
             throw new ViolationOfConstraintException(
                     String.format("Error delete author. Delete %s related book before delete author",

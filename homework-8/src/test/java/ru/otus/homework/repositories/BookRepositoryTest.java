@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.*;
 class BookRepositoryTest {
 
     @Autowired
-    BookRepository repository;
+    private BookRepository repository;
 
     @Autowired
-    MongoOperations operations;
+    private MongoOperations operations;
 
     @DisplayName(" обновлять книгу")
     @Test

@@ -19,9 +19,7 @@ import ru.otus.homework.repositories.GenreRepository;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 @DataMongoTest
-@ComponentScan({"ru.otus.homework.repositories"})
 @DisplayName("Репозиторий для работы с жанрами при наличии листенера в контексте ")
-@EnableConfigurationProperties
 @Import(MongoGenreDeleteEventsListener.class)
 public class GenreRepositoryWithListenerTest {
 

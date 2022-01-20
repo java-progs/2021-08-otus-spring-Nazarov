@@ -62,7 +62,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book saveBook(String name, String isbn, List<String> authorsId, List<String> genresId) {
-        authorsId.stream().collect(Collectors.toList());
         List<Author> authorsList = new ArrayList<>();
         List<Genre> genresList = new ArrayList<>();
 

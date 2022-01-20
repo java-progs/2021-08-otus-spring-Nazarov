@@ -20,18 +20,14 @@ import ru.otus.homework.repositories.GenreRepository;
 @RequiredArgsConstructor
 public class MongoGenreDeleteEventsListener extends AbstractMongoEventListener<Genre> {
 
-    private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
-    private final MongoTemplate template;
-
     @Override
     public void onBeforeDelete(BeforeDeleteEvent<Genre> event) {
         super.onBeforeDelete(event);
         val source = event.getSource();
         val id = source.get("_id").toString();
+        val countBook = bookRepository.getCountByGenre(id);
 
-        val query = Query.query(Criteria.where("genresList.$id").is(new ObjectId(id)));
-        val countBook = template.count(query, Book.class);
         if (countBook > 0) {
             throw new ViolationOfConstraintException(
                     String.format("Error delete genre. Delete %s related book before delete genre",
