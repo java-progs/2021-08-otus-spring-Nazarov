@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+<p><a href="/booksList.html" th:href="@{/books}">Books</a> | <a href="/authorsList.html" th:href="@{/authors}">Authors</a> | <a href="/genres.html" th:href="@{/genres}">Genres</a></p>
+<div th:if="${error != null}">
+    <h1 th:text="${error}">Error</h1>
+</div>
+<div th:if="${error == null}">
+<h1>Edit genre</h1>
+    <form id="edit-form" th:action="@{/editGenre(id=${genre.id})}" method="post" action="editGenre.html">
+        <table th:object="${genre}">
+            <tbody>
+            <tr>
+                <td>Id:</td>
+                <td th:text="*{id}">1</td>
+            </tr>
+            <tr>
+                <td>Name:</td>
+                <td><input id="name-input" name="name" type="text" th:value="*{name}" value="Aleksandr"/></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit">Save</button> <button type="button" onclick="window.location.href='genres.html'" th:onclick="window.location.href='/genres'">Cancel</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+</body>
+</html>

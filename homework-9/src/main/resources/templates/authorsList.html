@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .authors, .authors td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<p><a href="/booksList.html" th:href="@{/books}">Books</a> | <b>Authors</b> | <a href="/genres.html" th:href="@{/genres}">Genres</a></p>
+<h1>Authors</h1>
+<p><a href="newAuthor.html" th:href="@{/addAuthor}">New author</a></p>
+<table class="authors">
+    <thead>
+    <tr>
+        <td>ID</td>
+        <td>Surname</td>
+        <td>Name</td>
+        <td>Patronymic</td>
+        <td>Books</td>
+        <td>Action</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="author : ${authors}">
+        <td th:text="${author.id}">1</td>
+        <td th:text="${author.surname}">Pushkin</td>
+        <td th:text="${author.name}">Aleksandr</td>
+        <td th:text="${author.patronymic}">Sergeevich</td>
+        <td><a href="/books.html" th:href="@{/books(author=${author.id})}">Books list</a></td>
+        <td><span><a href="/editAuthor.html" th:href="@{/editAuthor(id=${author.id})}">Update</a> | <a href="/deleteAuthor.html" th:href="@{/deleteAuthor(id=${author.id})}">Delete</a></span></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

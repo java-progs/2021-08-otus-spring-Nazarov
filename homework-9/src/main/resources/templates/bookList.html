@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books, .books td {
+            border: 1px solid lightgray;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<p><b>Books</b> | <a href="/authors.html" th:href="@{/authors}">Authors</a> | <a href="/genres.html" th:href="@{/genres}">Genres</a></p>
+<div th:if="${error != null}">
+    <h1 th:text="${error}">Error</h1>
+</div>
+<div th:if="${error == null}">
+    <h1 th:text="${source}">Books</h1>
+    <p><a href="hewBook.html" th:href="@{/newBook}">New book</a></p>
+    <div th:if="${books.size() == 0}">Books not found</div>
+    <div th:if="${books.size() > 0}">
+        <table class="books">
+            <thead>
+            <tr>
+                <td>ID</td>
+                <td>Name</td>
+                <td>ISBN</td>
+                <td>Authors</td>
+                <td>Genres</td>
+                <td>Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.id}">1</td>
+                <td th:text="${book.name}">Java concurrency in practice</td>
+                <td th:text="${book.isbn}">12345</td>
+                <td><p th:each="author : ${book.authorsList}" th:text="${author.name} + ' ' + ${author.surname}">Brian Goetz</p></td>
+                <td><p th:each="genre : ${book.genresList}" th:text="${genre.name}">Programming</p></td>
+                <td><span><a href="/bookDetails.html" th:href="@{/bookDetails(id=${book.id})}">Show comments</a> | <a href="/editBook.html" th:href="@{/editBook(id=${book.id})}">Update</a> | <a href="/deleteBook.html" th:href="@{/deleteBook(id=${book.id})}">Delete</a></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
