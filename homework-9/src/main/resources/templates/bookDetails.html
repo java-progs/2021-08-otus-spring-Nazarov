@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        table {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<p><a href="/booksList.html" th:href="@{/books}">Books</a> | <a href="/authorsList.html" th:href="@{/authors}">Authors</a> | <a href="/genres.html" th:href="@{/genres}">Genres</a></p>
+<div th:if="${error != null}">
+    <h1 th:text="${error}">Error</h1>
+</div>
+<div th:if="${error == null}" th:object="${book}">
+    <h1>Book details</h1>
+    <table>
+        <tbody>
+        <tr>
+            <td><b>Id:</b></td>
+            <td th:text="*{id}">1</td>
+        </tr>
+        <tr>
+            <td><b>Name:</b></td>
+            <td th:text="*{name}">Java concurrency in practice</td>
+        </tr>
+        <tr>
+            <td><b>ISBN:</b></td>
+            <td th:text="*{isbn}">100200</td>
+        </tr>
+        <tr>
+            <td><b>Genres:</b></td>
+            <td>
+                <table>
+                    <tbody>
+                    <tr th:each="genre : *{genresList}">
+                        <td th:text="${genre.name}">Programming</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Authors:</b></td>
+            <td>
+                <table>
+                    <tbody>
+                    <tr th:each="author : *{authorsList}">
+                        <td th:text="${author.surname} + ' ' + ${author.name}">Brian Goetz</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${action == null}">
+        <h2>Add Comment:</h2>
+        <form name="add-comment" action="bookDetails.html" th:action="@{/addComment(bookId=*{id})}" method="post">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Author:</td>
+                    <td><input name="name" type="text" size="20"/></td>
+                </tr>
+                <tr>
+                    <td>Text:</td>
+                    <td><textarea name="commentText" cols="50" rows="3"></textarea></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit">Add comment</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div th:if="${action == 'updateComment'}">
+        <h2>Update Comment:</h2>
+        <form name="update-comment" action="bookDetails.html" th:action="@{/updateComment(bookId=*{id},commentId=${comment.id})}" method="post">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Author:</td>
+                    <td><span th:text="${comment.author}">User 1</span></td>
+                </tr>
+                <tr>
+                    <td>Text:</td>
+                    <td><textarea name="commentText" cols="50" rows="3" th:text="${comment.text}"></textarea></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit">Save comment</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(book.commentsList)}">
+    <h2>Comments: </h2>
+    <table cellpadding="10">
+        <tbody>
+        <tr th:each="comment: *{commentsList}">
+            <td><div>Author: <span th:text="${comment.author}">user1</span><br/>
+                Time: <span th:text="${comment.time}">2022-01-18 18:20:00</span><br/>
+                Text: <span th:text="${comment.text}">Text comment</span><br/>
+                <a href="bookDetails.html" th:href="@{/updateComment(bookId=${book.id},commentId=${comment.id})}">Update</a> |
+                <a href="bookDetails.html" th:href="@{/deleteComment(bookId=${book.id},commentId=${comment.id})}">Delete</a>
+            </div></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+<p><a href="/booksList.html" th:href="@{/books}">Books</a> | <a href="/authorsList.html" th:href="@{/authors}">Authors</a> | <a href="/genres.html" th:href="@{/genres}">Genres</a></p>
+<div th:if="${error != null}">
+    <h1 th:text="${error}">Error</h1>
+</div>
+<div th:if="${error == null}">
+    <h1>Creation book</h1>
+    <form id="edit-form" th:action="@{/newBook}" method="post" action="addBook.html">
+        <input type="hidden" name="id" th:value="${draftBook.id} ?: ''">
+        <table>
+            <tbody>
+            <tr>
+                <td>Name:</td>
+                <td><input id="name-input" name="name" type="text" th:value="${draftBook.name} ?: '' "/></td>
+            </tr>
+            <tr>
+                <td>ISBN:</td>
+                <td><input id="isbn-input" name="isbn" type="text" th:value="${draftBook.isbn} ?: ''"/></td>
+            </tr>
+            <tr>
+                <td>Authors:</td>
+                <td>
+                    <input type="hidden" name="authorsId" th:value="${bookAuthorsId}">
+                    <div th:if="${draftBook.authorsList != null}">
+                        <p th:each="author: ${draftBook.authorsList}">[(${author.name} + ' ' + ${author.surname})] |
+                            <button type="submit" name="deletedAuthorId" th:value="${author.id}">Delete</button></p>
+                    </div>
+                    <div th:if="${allowedAuthors.size > 0}">
+                    <select name="newAuthorId">
+                        <option></option>
+                        <option th:each="author : ${allowedAuthors}" th:value="${author.id}" th:text="${author.name} + ' ' + ${author.surname}">Aleksandr Pushkin</option>
+                    </select>
+                    <button type="submit" name="addAuthor" value="pressed">Add author</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Genres:</td>
+                <td>
+                    <input type="hidden" name="genresId" th:value="${bookGenresId}">
+                    <div th:if="${draftBook.genresList != null}">
+                        <p th:each="genre: ${draftBook.genresList}">[(${genre.name})] |
+                            <button type="submit" name="deletedGenreId" th:value="${genre.id}">Delete</button></p>
+                    </div>
+                    <div th:if="${allowedGenres.size > 0}">
+                        <select name="newGenreId">
+                            <option></option>
+                            <option th:each="genre : ${allowedGenres}" th:value="${genre.id}" th:text="${genre.name}">Programming</option>
+                        </select>
+                        <button type="submit" name="addGenre" value="pressed">Add genre</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><button type="submit" name="saveBook" value="pressed">Save</button> <button type="button" onclick="window.location.href='authors.html'" th:onclick="window.location.href='/authors'">Cancel</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+</body>
+</html>
