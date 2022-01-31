@@ -26,4 +26,13 @@ public class Author {
         this.name = name;
         this.patronymic = patronymic;
     }
+
+    public String getFullName() {
+        var fullName = String.format("%s %s", surname, name);
+        if (!(patronymic == null) && patronymic.length() > 0 ) {
+            fullName += " " + patronymic;
+        }
+
+        return fullName;
+    }
 }

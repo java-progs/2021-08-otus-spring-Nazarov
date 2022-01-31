@@ -17,7 +17,7 @@
 <div th:if="${error == null}">
     <h1>Creation book</h1>
     <form id="edit-form" th:action="@{/newBook}" method="post" action="addBook.html">
-        <input type="hidden" name="bookId" th:value="${draftBook.id} ?: ''">
+        <input type="hidden" name="id" th:value="${draftBook.id} ?: ''">
         <table>
             <tbody>
             <tr>

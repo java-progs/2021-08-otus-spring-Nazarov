@@ -12,15 +12,18 @@ import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
 import ru.otus.homework.domain.Genre;
+import ru.otus.homework.dto.BookDto;
+import ru.otus.homework.dto.Mapper;
 import ru.otus.homework.exception.RecordNotFoundException;
 import ru.otus.homework.service.AuthorService;
 import ru.otus.homework.service.BookService;
 import ru.otus.homework.service.GenreService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.otus.homework.dto.Mapper.DELIMITER;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class BookController {
     private final BookService bookService;
     private final AuthorService authorService;
     private final GenreService genreService;
-    private final String DELIMITER = ";";
+    private final Mapper mapper;
 
     @GetMapping(value = {"/", "/books"})
     public String getAll(Model model) {
@@ -50,11 +53,7 @@ public class BookController {
         }
 
         val bookList = bookService.getByAuthor(authorId);
-        var authorName = String.format("%s %s", author.getSurname(), author.getName());
-        if (!(author.getPatronymic() == null) && author.getPatronymic().length() > 0 ) {
-            authorName += " " + author.getPatronymic();
-        }
-        model.addAttribute("source", "Books by " + authorName);
+        model.addAttribute("source", "Books by " + author.getFullName());
         model.addAttribute("books", bookList);
         return "bookList";
     }
@@ -85,75 +84,49 @@ public class BookController {
         return "book";
     }
 
-    @PostMapping(value = "/newBook", params = {"bookId", "name", "isbn", "addAuthor", "newAuthorId", "authorsId", "genresId"})
-    public String bookAddAuthor(String bookId, String name, String isbn, String newAuthorId,
-                                   String authorsId, String genresId, Model model) {
-        val authorsIdList = splitString(authorsId, DELIMITER);
-        authorsIdList.add(newAuthorId);
-        val bookAuthors = authorService.getAllById(authorsIdList);
+    @PostMapping(value = "/newBook", params = {"addAuthor", "newAuthorId"})
+    public String bookAddAuthor(BookDto bookDto, String newAuthorId, Model model) {
+        val authorsId = bookDto.getAuthorsId() + DELIMITER + newAuthorId;
+        bookDto.setAuthorsId(authorsId);
 
-        val genresIdList = splitString(genresId, DELIMITER);
-        val bookGenres = genreService.getAllById(genresIdList);
-
-        fillDraftBookModel(bookId, name, isbn, bookAuthors, bookGenres, model);
+        fillDraftBookModel(mapper.toBook(bookDto), model);
         return "book";
     }
 
-    @PostMapping(value = "/newBook", params = {"bookId", "name", "isbn", "addGenre", "newGenreId", "authorsId", "genresId"})
-    public String bookAddGenre(String bookId, String name, String isbn, String newGenreId,
-                                  String authorsId, String genresId, Model model) {
-        val genresIdList = splitString(genresId, DELIMITER);
-        genresIdList.add(newGenreId);
-        val bookGenres = genreService.getAllById(genresIdList);
+    @PostMapping(value = "/newBook", params = {"addGenre", "newGenreId"})
+    public String bookAddGenre(BookDto bookDto, String newGenreId, Model model) {
+        val genresId = bookDto.getGenresId() + DELIMITER + newGenreId;
+        bookDto.setGenresId(genresId);
 
-        val authorsIdList = splitString(authorsId, DELIMITER);
-        val bookAuthors = authorService.getAllById(authorsIdList);
-
-        fillDraftBookModel(bookId, name, isbn, bookAuthors, bookGenres, model);
+        fillDraftBookModel(mapper.toBook(bookDto), model);
         return "book";
     }
 
-    @PostMapping(value = "/newBook", params = {"bookId", "name", "isbn", "deletedAuthorId", "authorsId", "genresId"})
-    public String bookDeleteAuthor(String bookId, String name, String isbn, String deletedAuthorId,
-                                   String authorsId, String genresId, Model model) {
-        val authorsIdList = splitString(authorsId, DELIMITER);
+    @PostMapping(value = "/newBook", params = {"deletedAuthorId"})
+    public String bookDeleteAuthor(BookDto bookDto, String deletedAuthorId, Model model) {
+        val authorsIdList = splitString(bookDto.getAuthorsId(), DELIMITER);
         authorsIdList.remove(deletedAuthorId);
-        val bookAuthors = authorService.getAllById(authorsIdList);
 
-        val genresIdList = splitString(genresId, DELIMITER);
-        val bookGenres = genreService.getAllById(genresIdList);
+        bookDto.setAuthorsId(authorsIdList.stream().collect(Collectors.joining(DELIMITER)));
 
-        fillDraftBookModel(bookId, name, isbn, bookAuthors, bookGenres, model);
+        fillDraftBookModel(mapper.toBook(bookDto), model);
         return "book";
     }
 
-    @PostMapping(value = "/newBook", params = {"bookId", "name", "isbn", "deletedGenreId", "authorsId", "genresId"})
-    public String bookDeleteGenre(String bookId, String name, String isbn, String deletedGenreId,
-                                  String authorsId, String genresId, Model model) {
-        val genresIdList = splitString(genresId, DELIMITER);
+    @PostMapping(value = "/newBook", params = {"deletedGenreId"})
+    public String bookDeleteGenre(BookDto bookDto, String deletedGenreId, Model model) {
+        val genresIdList = splitString(bookDto.getGenresId(), DELIMITER);
         genresIdList.remove(deletedGenreId);
-        val bookGenres = genreService.getAllById(genresIdList);
 
-        val authorsIdList = splitString(authorsId, DELIMITER);
-        val bookAuthors = authorService.getAllById(authorsIdList);
+        bookDto.setGenresId(genresIdList.stream().collect(Collectors.joining(DELIMITER)));
 
-        fillDraftBookModel(bookId, name, isbn, bookAuthors, bookGenres, model);
+        fillDraftBookModel(mapper.toBook(bookDto), model);
         return "book";
     }
 
-    @PostMapping(value = "/newBook", params = {"bookId", "name", "isbn", "authorsId", "genresId"})
-    public String bookSave(String bookId, String name, String isbn, String authorsId, String genresId, Model model) {
-        val genresIdList = splitString(genresId, DELIMITER);
-        val bookGenres = genreService.getAllById(genresIdList);
-
-        val authorsIdList = splitString(authorsId, DELIMITER);
-        val bookAuthors = authorService.getAllById(authorsIdList);
-
-        val book = new Book(name, isbn, bookAuthors, bookGenres, null);
-        if (bookId != null)  {
-            book.setId(bookId);
-        }
-
+    @PostMapping(value = "/newBook")
+    public String bookSave(BookDto bookDto, Model model) {
+        val book = mapper.toBook(bookDto);
         bookService.saveBook(book);
 
         return "redirect:/books";
@@ -170,7 +143,7 @@ public class BookController {
             return "book";
         }
 
-        fillDraftBookModel(book.getId(), book.getName(), book.getIsbn(), book.getAuthorsList(), book.getGenresList(), model);
+        fillDraftBookModel(book, model);
 
         return "book";
     }
@@ -193,55 +166,6 @@ public class BookController {
         return "bookDetails";
     }
 
-    @PostMapping(value = "/addComment", params = {"bookId", "name", "commentText"})
-    public String addComment(@RequestParam("bookId") String bookId,
-                             @RequestParam("name") String author,
-                             @RequestParam("commentText") String text,
-                             Model model) {
-        val comment = new Comment(author, text);
-        bookService.addComment(bookId, comment);
-        fillBookModel(bookId, model);
-        return "bookDetails";
-    }
-
-    @GetMapping(value = "/updateComment", params = {"bookId", "commentId"})
-    public String updateComment(@RequestParam("bookId") String bookId,
-                                @RequestParam("commentId") String commentId,
-                                Model model) {
-        fillBookModel(bookId, model);
-        if (model.getAttribute("error") != null) {
-            return "bookDetails";
-        }
-
-        val comment = bookService.getComment(bookId, commentId);
-        if (comment == null) {
-            return "bookDetails";
-        }
-
-        model.addAttribute("action", "updateComment");
-        model.addAttribute("comment", comment);
-        return "bookDetails";
-    }
-
-    @PostMapping(value = "/updateComment", params = {"bookId", "commentId", "commentText"})
-    public String updateComment(@RequestParam("bookId") String bookId,
-                                @RequestParam("commentId") String commentId,
-                                @RequestParam("commentText") String text,
-                                Model model) {
-        bookService.updateComment(bookId, commentId, text);
-        fillBookModel(bookId, model);
-        return "bookDetails";
-    }
-
-    @GetMapping(value = "/deleteComment")
-    public String deleteComment(@RequestParam("bookId") String bookId,
-                                @RequestParam("commentId") String commentId,
-                                Model model) {
-        bookService.deleteComment(bookId, commentId);
-        fillBookModel(bookId, model);
-        return "bookDetails";
-    }
-
     private void fillBookModel(String bookId, Model model) {
         try {
             val book = bookService.getBookById(bookId);
@@ -251,15 +175,22 @@ public class BookController {
         }
     }
 
-    private void fillDraftBookModel(String bookId, String name, String isbn, List<Author> bookAuthors, List<Genre> bookGenres, Model model) {
+    private void fillDraftBookModel(Book book, Model model) {
         val allAuthors = authorService.getAllAuthors();
         val allGenres = genreService.getAllGenres();
-        model.addAttribute("bookId", bookId);
-        model.addAttribute("bookAuthorsId", bookAuthors.stream().map(a -> a.getId()).collect(Collectors.joining(DELIMITER)));
-        model.addAttribute("bookGenresId", bookGenres.stream().map(a -> a.getId()).collect(Collectors.joining(DELIMITER)));
-        model.addAttribute("allowedAuthors", excludeObjectsList(allAuthors, bookAuthors));
-        model.addAttribute("allowedGenres", excludeObjectsList(allGenres, bookGenres));
-        model.addAttribute("draftBook", new Book(name, isbn, bookAuthors, bookGenres, null));
+
+        val authorsId = book.getAuthorsList().stream().map(a -> a.getId()).collect(Collectors.joining(DELIMITER));
+        val genresId = book.getGenresList().stream().map(g -> g.getId()).collect(Collectors.joining(DELIMITER));
+
+        val allowedAuthors = excludeObjectsList(allAuthors, book.getAuthorsList());
+        val allowedGenres = excludeObjectsList(allGenres, book.getGenresList());
+
+        model.addAttribute("bookId", book.getId());
+        model.addAttribute("bookAuthorsId", authorsId);
+        model.addAttribute("bookGenresId", genresId);
+        model.addAttribute("allowedAuthors", allowedAuthors);
+        model.addAttribute("allowedGenres", allowedGenres);
+        model.addAttribute("draftBook", book);
     }
 
     private List<String> splitString(String string, String delimiter) {
@@ -269,4 +200,5 @@ public class BookController {
     private <T> List<T> excludeObjectsList(List<T> list, List<T> excludeList) {
         return list.stream().filter(o -> !excludeList.contains(o)).collect(Collectors.toList());
     }
+
 }
