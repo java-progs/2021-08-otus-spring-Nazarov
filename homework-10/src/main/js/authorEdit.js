@@ -9,7 +9,6 @@ class AuthorEdit extends Component {
     authorsRoute = '/authors';
 
     emptyAuthor = {
-        id: '',
         surname: '',
         name: '',
         patronymic: ''

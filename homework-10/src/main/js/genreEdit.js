@@ -9,7 +9,6 @@ class GenreEdit extends Component {
     genresRoute = '/genres';
 
     emptyGenre = {
-        id: '',
         name: ''
     };
 

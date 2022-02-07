@@ -11,7 +11,6 @@ class CommentEdit extends Component {
     commentsRoute = '/comments';
 
     emptyComment = {
-        id: '',
         author: '',
         text: ''
     };

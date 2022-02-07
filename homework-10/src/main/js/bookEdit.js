@@ -11,7 +11,6 @@ class BookEdit extends Component {
     booksRoute = '/books';
 
     emptyBook = {
-        id: '',
         name: '',
         isbn: '',
         authorsId: [],
