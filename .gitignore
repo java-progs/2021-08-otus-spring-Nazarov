@@ -2,3 +2,5 @@
 .idea/
 .DS_Store
 target/
+node_modules/
+src/main/resources/static/built/
