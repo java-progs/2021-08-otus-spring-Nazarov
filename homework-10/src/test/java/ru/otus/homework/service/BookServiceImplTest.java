@@ -4,12 +4,11 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
 import ru.otus.homework.domain.Genre;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.repositories.AuthorRepository;
 import ru.otus.homework.repositories.BookRepository;
 import ru.otus.homework.repositories.GenreRepository;
@@ -170,7 +169,7 @@ class BookServiceImplTest {
 
     @DisplayName("возвращать комментарий к книге")
     @Test
-    void shouldReturnBookCommentById() throws RecordNotFoundException {
+    void shouldReturnBookCommentById() throws ObjectNotFoundException {
         val commentFirst = new Comment("1", "User", LocalDateTime.now(), "Text");
         val commentSecond = new Comment("2", "reader", LocalDateTime.now(), "Comment text");
         val actualComments = List.of(commentFirst, commentSecond);
@@ -197,7 +196,7 @@ class BookServiceImplTest {
 
     @DisplayName("обновлять комментарий")
     @Test
-    void shouldUpdateComment() throws RecordNotFoundException {
+    void shouldUpdateComment() throws ObjectNotFoundException {
         val comment = new Comment("1", "User1", LocalDateTime.now(), "text (updated)");
         val updatedComment = new Comment("1", "User1", comment.getTime(), "text (updated)");
 

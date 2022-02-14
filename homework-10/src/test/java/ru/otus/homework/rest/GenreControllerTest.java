@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework.domain.Genre;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.exception.ViolationOfConstraintException;
 import ru.otus.homework.service.GenreService;
 import ru.otus.homework.util.TestUtil;
@@ -71,7 +71,7 @@ class GenreControllerTest {
     @DisplayName("вернуть 404 при запросе несуществующего жанра")
     @Test
     public void shouldReturn404() throws Exception {
-        when(genreService.getGenreById("3")).thenThrow(new RecordNotFoundException(""));
+        when(genreService.getGenreById("3")).thenThrow(new ObjectNotFoundException(""));
         mvc.perform(get(API + "/3"))
                 .andExpect(status().isNotFound());
 
@@ -102,6 +102,7 @@ class GenreControllerTest {
     @Test
     public void shouldUpdateAndReturn200() throws Exception {
         val genre = new Genre("21", "Programming");
+        given(genreService.existById(genre.getId())).willReturn(true);
         given(genreService.updateGenre(genre)).willReturn(true);
 
         mvc.perform(put(API + "/" + genre.getId())
@@ -111,7 +112,7 @@ class GenreControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", equalTo(genre.getId())));
 
-        verify(genreService, times(1)).getGenreById(genre.getId());
+        verify(genreService, times(1)).existById(genre.getId());
         verify(genreService, times(1)).updateGenre(genre);
         verifyNoMoreInteractions(genreService);
     }
@@ -120,15 +121,16 @@ class GenreControllerTest {
     @Test
     public void shouldNotUpdateAndReturn404() throws Exception {
         val genre = new Genre("20", "Programming");
-        given(genreService.getGenreById(genre.getId()))
-                .willThrow(RecordNotFoundException.class);
+        given(genreService.existById(genre.getId())).willReturn(false);
+        given(genreService.existById(genre.getId())).willReturn(false);
 
         mvc.perform(put(API + "/" + genre.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.getJsonBytes(genre))
                 ).andExpect(status().isNotFound());
 
-        verify(genreService, times(1)).getGenreById(genre.getId());
+        verify(genreService, times(1)).existById(genre.getId());
+        verify(genreService, times(1)).existById(genre.getId());
         verifyNoMoreInteractions(genreService);
     }
 

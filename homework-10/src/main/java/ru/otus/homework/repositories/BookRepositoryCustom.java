@@ -2,7 +2,7 @@ package ru.otus.homework.repositories;
 
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface BookRepositoryCustom {
 
     List<Book> findByGenre(String genreId);
 
-    Comment findComment(String bookId, String commentId) throws RecordNotFoundException;
+    Comment findComment(String bookId, String commentId) throws ObjectNotFoundException;
 
     Long getCountByAuthor(String authorId);
 

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework.domain.Author;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.exception.ViolationOfConstraintException;
 import ru.otus.homework.service.AuthorService;
 import ru.otus.homework.util.TestUtil;
@@ -72,7 +72,7 @@ class AuthorControllerTest {
     @DisplayName("вернуть 404 при запросе несуществующего автора")
     @Test
     public void shouldReturn404() throws Exception {
-        when(authorService.getAuthorById("3")).thenThrow(new RecordNotFoundException(""));
+        when(authorService.getAuthorById("3")).thenThrow(new ObjectNotFoundException(""));
         mvc.perform(get(API + "/3"))
                 .andExpect(status().isNotFound());
 
@@ -104,6 +104,7 @@ class AuthorControllerTest {
     @Test
     public void shouldUpdateAndReturn200() throws Exception {
         val author = new Author("21", "Goetz", "Brian", "");
+        given(authorService.existById(author.getId())).willReturn(true);
         given(authorService.updateAuthor(author)).willReturn(true);
 
         mvc.perform(put(API + "/" + author.getId())
@@ -113,7 +114,7 @@ class AuthorControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", equalTo(author.getId())));
 
-        verify(authorService, times(1)).getAuthorById(author.getId());
+        verify(authorService, times(1)).existById(author.getId());
         verify(authorService, times(1)).updateAuthor(author);
         verifyNoMoreInteractions(authorService);
     }
@@ -122,15 +123,14 @@ class AuthorControllerTest {
     @Test
     public void shouldNotUpdateAndReturn404() throws Exception {
         val author = new Author("21", "Goetz", "Brian", "");
-        given(authorService.getAuthorById(author.getId()))
-                .willThrow(RecordNotFoundException.class);
+        given(authorService.existById(author.getId())).willReturn(false);
 
         mvc.perform(put(API + "/" + author.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.getJsonBytes(author))
         ).andExpect(status().isNotFound());
 
-        verify(authorService, times(1)).getAuthorById(author.getId());
+        verify(authorService, times(1)).existById(author.getId());
         verifyNoMoreInteractions(authorService);
     }
 

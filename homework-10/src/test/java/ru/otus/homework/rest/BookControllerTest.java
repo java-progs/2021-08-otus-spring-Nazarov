@@ -4,6 +4,7 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -11,7 +12,7 @@ import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.dto.Mapper;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.repositories.AuthorRepository;
 import ru.otus.homework.repositories.GenreRepository;
 import ru.otus.homework.service.BookService;
@@ -64,7 +65,9 @@ class BookControllerTest {
 
         when(bookService.getAllBooks()).thenReturn(List.of(bookFirst, bookSecond));
         when(bookService.getBookById(EXISTING_BOOK_ID)).thenReturn(bookFirst);
-        when(bookService.getBookById(NO_EXISTING_BOOK_ID)).thenThrow(RecordNotFoundException.class);
+        when(bookService.getBookById(NO_EXISTING_BOOK_ID)).thenThrow(ObjectNotFoundException.class);
+        when(bookService.existById(EXISTING_BOOK_ID)).thenReturn(true);
+        when(bookService.existById(NO_EXISTING_BOOK_ID)).thenReturn(false);
     }
 
     @DisplayName("вернуть 200 и json со всеми книгами")
@@ -134,7 +137,7 @@ class BookControllerTest {
         val author = new Author("2", "Sedgewick", "Robert", "");
         val genre = new Genre("1", "Programming");
         val book = new Book(EXISTING_BOOK_ID,"Algorithms", "", List.of(author), List.of(genre), null);
-        given(bookService.updateBook(book)).willReturn(true);
+        when(bookService.updateBook(book)).thenReturn(true);
 
         mvc.perform(put(API + "/" + book.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +146,7 @@ class BookControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", equalTo(book.getId())));
 
-        verify(bookService, times(1)).getBookById(book.getId());
+        verify(bookService, times(1)).existById(book.getId());
         verify(bookService, times(1)).updateBook(book);
         verifyNoMoreInteractions(bookService);
     }
@@ -160,7 +163,7 @@ class BookControllerTest {
                 .content(TestUtil.getJsonBytes(mapper.toDto(book)))
         ).andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(book.getId());
+        verify(bookService, times(1)).existById(book.getId());
         verifyNoMoreInteractions(bookService);
     }
 

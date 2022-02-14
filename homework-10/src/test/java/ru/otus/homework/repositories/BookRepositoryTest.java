@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import ru.otus.homework.configuration.MongockConfiguration;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -50,7 +50,7 @@ class BookRepositoryTest {
 
     @DisplayName("получать комментарий к книге")
     @Test
-    void shouldFindComment() throws RecordNotFoundException {
+    void shouldFindComment() throws ObjectNotFoundException {
         val book = repository.findAll().get(1);
         val expectedComment = book.getCommentsList().get(0);
 
@@ -64,7 +64,7 @@ class BookRepositoryTest {
         val book = repository.findAll().get(0);
         val randomCommentId = UUID.randomUUID().toString();
         assertThatThrownBy(() -> repository.findComment(book.getId(), randomCommentId))
-                .isInstanceOf(RecordNotFoundException.class);
+                .isInstanceOf(ObjectNotFoundException.class);
     }
 
     @DisplayName("добавлять комментарий")

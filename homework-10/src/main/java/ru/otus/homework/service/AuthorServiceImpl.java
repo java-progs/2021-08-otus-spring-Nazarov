@@ -4,7 +4,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.repositories.AuthorRepository;
 import ru.otus.homework.domain.Author;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,9 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Author getAuthorById(String id) throws RecordNotFoundException {
+    public Author getAuthorById(String id) throws ObjectNotFoundException {
         return repository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found author with id = %s", id)));
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Not found author with id = %s", id)));
     }
 
     @Override
@@ -73,4 +73,8 @@ public class AuthorServiceImpl implements AuthorService {
         repository.deleteById(id);
     }
 
+    @Override
+    public boolean existById(String id) {
+        return repository.existsById(id);
+    }
 }

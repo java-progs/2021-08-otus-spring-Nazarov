@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
     }
 
     @Override
-    public Comment findComment(String bookId, String commentId) throws RecordNotFoundException {
+    public Comment findComment(String bookId, String commentId) throws ObjectNotFoundException {
         val matchBook = new MatchOperation(Criteria.where("_id").is(new ObjectId(bookId)));
         val unwind = unwind("commentsList");
         val matchComment = new MatchOperation(Criteria.where("commentsList._id").is(commentId));
@@ -51,7 +51,7 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
             val result = mongoTemplate.aggregate(aggregation, Book.class, Comment.class).getMappedResults().get(0);
             return result;
         } catch (IndexOutOfBoundsException e) {
-            throw new RecordNotFoundException(String.format("No comment with id %s found for book with id %s", commentId, bookId));
+            throw new ObjectNotFoundException(String.format("No comment with id %s found for book with id %s", commentId, bookId));
         }
     }
 

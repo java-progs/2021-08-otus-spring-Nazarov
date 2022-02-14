@@ -4,7 +4,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import ru.otus.homework.repositories.GenreRepository;
 import ru.otus.homework.domain.Genre;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,9 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public Genre getGenreById(String id) throws RecordNotFoundException {
+    public Genre getGenreById(String id) throws ObjectNotFoundException {
         return repository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found genre with id = %s", id)));
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Not found genre with id = %s", id)));
     }
 
     @Override
@@ -73,4 +73,8 @@ public class GenreServiceImpl implements GenreService {
         repository.deleteById(id);
     }
 
+    @Override
+    public boolean existById(String id) {
+        return repository.existsById(id);
+    }
 }

@@ -2,7 +2,7 @@ package ru.otus.homework.service;
 
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface BookService {
 
     List<Book> getByGenre(String id);
 
-    Book getBookById(String id) throws RecordNotFoundException;
+    Book getBookById(String id) throws ObjectNotFoundException;
 
     Book saveBook(Book book);
 
@@ -26,7 +26,7 @@ public interface BookService {
 
     List<Comment> getAllBookComments(String bookId);
 
-    Comment getComment(String bookId, String commentId) throws RecordNotFoundException;
+    Comment getComment(String bookId, String commentId) throws ObjectNotFoundException;
 
     boolean addComment(String bookId, Comment comment);
 
@@ -34,4 +34,5 @@ public interface BookService {
 
     boolean deleteComment(String bookId, String commentId);
 
+    boolean existById(String id);
 }

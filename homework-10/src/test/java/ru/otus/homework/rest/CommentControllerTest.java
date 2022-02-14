@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.service.BookService;
 import ru.otus.homework.util.TestUtil;
 
@@ -42,8 +42,8 @@ class CommentControllerTest {
 
     @BeforeEach
     public void bookServicePrepare() throws Exception {
-        given(bookService.getBookById(EXISTING_BOOK_ID)).willReturn(new Book());
-        when(bookService.getBookById(NO_EXISTING_BOOK_ID)).thenThrow(RecordNotFoundException.class);
+        given(bookService.existById(EXISTING_BOOK_ID)).willReturn(true);
+        given(bookService.existById(NO_EXISTING_BOOK_ID)).willReturn(false);
     }
 
     private String getApiPath(String bookId) {
@@ -63,7 +63,7 @@ class CommentControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).getAllBookComments(bookId);
         verifyNoMoreInteractions(bookService);
     }
@@ -78,7 +78,7 @@ class CommentControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(0)));
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).getAllBookComments(bookId);
         verifyNoMoreInteractions(bookService);
     }
@@ -87,11 +87,10 @@ class CommentControllerTest {
     @Test
     public void shouldReturn404() throws Exception {
         val bookId = NO_EXISTING_BOOK_ID;
-        given(bookService.getAllBookComments(bookId)).willReturn(null);
         mvc.perform(get(getApiPath(bookId)))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verifyNoMoreInteractions(bookService);
     }
 
@@ -108,7 +107,7 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.id", equalTo(comment.getId())))
                 .andExpect(jsonPath("$.text", equalTo(comment.getText())));
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).getComment(bookId, comment.getId());
         verifyNoMoreInteractions(bookService);
     }
@@ -118,11 +117,11 @@ class CommentControllerTest {
     public void shouldReturn404CommentNotFound() throws Exception {
         val bookId = EXISTING_BOOK_ID;
 
-        given(bookService.getComment(bookId, "2")).willThrow(RecordNotFoundException.class);
+        given(bookService.getComment(bookId, "2")).willThrow(ObjectNotFoundException.class);
         mvc.perform(get(getApiPath(bookId) + "/2"))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).getComment(bookId, "2");
         verifyNoMoreInteractions(bookService);
     }
@@ -135,7 +134,7 @@ class CommentControllerTest {
         mvc.perform(get(getApiPath(bookId) + "/2"))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verifyNoMoreInteractions(bookService);
     }
 
@@ -164,7 +163,7 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.id", equalTo("21")))
                 .andExpect(jsonPath("$.text", equalTo("text comment")));
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).addComment(bookId, resultComment);
         verifyNoMoreInteractions(bookService);
     }
@@ -180,7 +179,7 @@ class CommentControllerTest {
                         .content(TestUtil.getJsonBytes(comment))
                 ).andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verifyNoMoreInteractions(bookService);
     }
 
@@ -207,7 +206,7 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.id", equalTo(comment.getId())))
                 .andExpect(jsonPath("$.time", not(comment.getTime())));
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).updateComment(bookId, resultComment);
         verifyNoMoreInteractions(bookService);
     }
@@ -223,7 +222,7 @@ class CommentControllerTest {
                         .content(TestUtil.getJsonBytes(comment))
                 ).andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verifyNoMoreInteractions(bookService);
     }
 
@@ -250,7 +249,7 @@ class CommentControllerTest {
         mvc.perform(delete(getApiPath(bookId) + "/21"))
                 .andExpect(status().isOk());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verify(bookService, times(1)).deleteComment(bookId, "21");
         verifyNoMoreInteractions(bookService);
     }
@@ -263,7 +262,7 @@ class CommentControllerTest {
         mvc.perform(delete(getApiPath(bookId) + "/21"))
                 .andExpect(status().isNotFound());
 
-        verify(bookService, times(1)).getBookById(bookId);
+        verify(bookService, times(1)).existById(bookId);
         verifyNoMoreInteractions(bookService);
     }
 }

@@ -5,22 +5,22 @@ import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.service.BookService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/books/{book_id}/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final BookService bookService;
 
-    @GetMapping
-    public ResponseEntity getBookComments(@PathVariable("book_id") String bookId) {
+    @GetMapping("/api/books/{book_id}/comments")
+    public ResponseEntity<List<Comment>> getBookComments(@PathVariable("book_id") String bookId) {
         if (!bookExist(bookId)) {
             return ResponseEntity.notFound().build();
         }
@@ -30,8 +30,8 @@ public class CommentController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity getBookComment(@PathVariable("book_id") String bookId, @PathVariable("id") String commentId) {
+    @GetMapping("/api/books/{book_id}/comments/{id}")
+    public ResponseEntity<Comment> getBookComment(@PathVariable("book_id") String bookId, @PathVariable("id") String commentId) {
         if (!bookExist(bookId)) {
             return ResponseEntity.notFound().build();
         }
@@ -39,13 +39,13 @@ public class CommentController {
         try {
             val comment = bookService.getComment(bookId, commentId);
             return ResponseEntity.ok(comment);
-        } catch (RecordNotFoundException e) {
+        } catch (ObjectNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping
-    public ResponseEntity addBookComment(@PathVariable("book_id") String bookId, @RequestBody Comment comment)
+    @PostMapping("/api/books/{book_id}/comments")
+    public ResponseEntity<Comment> addBookComment(@PathVariable("book_id") String bookId, @RequestBody Comment comment)
             throws URISyntaxException {
         if (!bookExist(bookId)) {
             return ResponseEntity.notFound().build();
@@ -60,8 +60,8 @@ public class CommentController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity updateBookComment(@PathVariable("book_id") String bookId,
+    @PutMapping("/api/books/{book_id}/comments/{id}")
+    public ResponseEntity<Comment> updateBookComment(@PathVariable("book_id") String bookId,
                                             @PathVariable("id") String commentId,
                                             @RequestBody Comment comment) {
         if (comment.getId() == null || !commentId.equals(comment.getId())) {
@@ -79,8 +79,8 @@ public class CommentController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteBookComment(@PathVariable("book_id") String bookId, @PathVariable("id") String commentId) {
+    @DeleteMapping("/api/books/{book_id}/comments/{id}")
+    public ResponseEntity<?> deleteBookComment(@PathVariable("book_id") String bookId, @PathVariable("id") String commentId) {
         if (!bookExist(bookId)) {
             return ResponseEntity.notFound().build();
         }
@@ -90,12 +90,7 @@ public class CommentController {
     }
 
     private boolean bookExist(String bookId) {
-        try {
-            bookService.getBookById(bookId);
-            return true;
-        } catch (RecordNotFoundException e) {
-            return false;
-        }
+        return bookService.existById(bookId);
     }
 
 }

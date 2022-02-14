@@ -1,18 +1,15 @@
 package ru.otus.homework.service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.domain.Genre;
-import ru.otus.homework.exception.RecordNotFoundException;
+import ru.otus.homework.exception.ObjectNotFoundException;
 import ru.otus.homework.repositories.AuthorRepository;
 import ru.otus.homework.repositories.BookRepository;
 import ru.otus.homework.repositories.GenreRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,9 +48,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book getBookById(String id) throws RecordNotFoundException {
+    public Book getBookById(String id) throws ObjectNotFoundException {
         return bookRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException(String.format("Not found book with id = %s", id)));
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Not found book with id = %s", id)));
     }
 
     @Override
@@ -93,7 +90,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Comment getComment(String bookId, String commentId) throws RecordNotFoundException {
+    public Comment getComment(String bookId, String commentId) throws ObjectNotFoundException {
         return bookRepository.findComment(bookId, commentId);
     }
 
@@ -128,5 +125,10 @@ public class BookServiceImpl implements BookService {
 
     private LocalDateTime getTime() {
         return LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+    }
+
+    @Override
+    public boolean existById(String id) {
+        return bookRepository.existsById(id);
     }
 }
