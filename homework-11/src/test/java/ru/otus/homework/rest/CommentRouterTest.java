@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-@Import({CommentRouter.class})
+@Import({CommentRouter.class, CommentHandler.class})
 @WebFluxTest(CommentRouter.class)
 @DisplayName("Comment роутер должен ")
 class CommentRouterTest {
