@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-@Import({AuthorRouter.class})
+@Import({AuthorRouter.class, AuthorHandler.class})
 @WebFluxTest(AuthorRouter.class)
 @DisplayName("Author роутер должен ")
 class AuthorRouterTest {

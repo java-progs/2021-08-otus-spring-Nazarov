@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-@Import({GenreRouter.class})
+@Import({GenreRouter.class, GenreHandler.class})
 @WebFluxTest({GenreRouter.class})
 @DisplayName("Genre роутер должен ")
 class GenreRouterTest {

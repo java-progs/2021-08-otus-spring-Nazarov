@@ -46,8 +46,9 @@ class BookRouterTest {
     @BeforeEach
     void createMocks() {
         mapper = new Mapper(authorRepository, genreRepository);
+        val handler = new BookHandler(bookRepository, mapper);
         val router = new BookRouter();
-        val routerFunction = router.composedBookRoutes(bookRepository, mapper);
+        val routerFunction = router.composedBookRoutes(handler);
         client = WebTestClient.bindToRouterFunction(routerFunction).build();
 
         val authorFirst = new Author("1", "Goetz", "Brian", "");
