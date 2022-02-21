@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/header.html :: header"></div>
+    <div class="header">Creation genre</div>
+    <div th:if="${error != null}">
+        <b th:text="${error}">Error</b>
+    </div>
+    <div th:if="${error == null}">
+        <form id="edit-form" th:action="@{/addGenre}" method="post" action="addGenre.html">
+            <table class="tableEdit">
+                <tbody>
+                <tr>
+                    <td>Name:</td>
+                    <td><input id="name-input" name="name" type="text"/></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button class="btnAction" type="submit">Save</button>
+                        <button class="btnAction" type="button" onclick="window.location.href='genres.html'"
+                                th:onclick="window.location.href='/genres'">Cancel
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+</body>
+</html>

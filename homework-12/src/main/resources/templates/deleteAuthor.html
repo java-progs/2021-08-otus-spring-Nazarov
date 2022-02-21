@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete author</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/header.html :: header"></div>
+    <div class="header">Delete author</div>
+    <div th:if="${error != null}">
+        <b>Error deleting author with id [(${authorId})]</b>
+        <p th:text="${error}">Error description</p>
+    </div>
+    <div th:if="${error == null}" th:object="${author}">
+        <p>Id: [(*{id})]</p>
+        <p>Surname: [(*{surname})]</p>
+        <p>Name: [(*{name})]</p>
+        <p>Patronymic: [(*{patronymic})]</p>
+        <p><b>Do you want to delete author?</b></p>
+        <form name="delete-author" method="post" action="deleteAuthor.html"
+              th:action="@{/deleteAuthor(id=${author.id})}">
+            <button class="btnAction" type="submit">Yes</button>
+            <button class="btnAction" type="button" onclick="window.location.href='authorsList.html';"
+                    th:onclick="window.location.href='/authors'">Cancel
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
