@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/header.html :: header"></div>
+    <div class="header" th:text="${#strings.isEmpty(draftBook.id)} ? 'New book' : 'Edit book'">New book</div>
+    <div th:if="${error != null}">
+        <b th:text="${error}">Error</b>
+    </div>
+    <div th:if="${error == null}">
+        <form id="edit-form" th:action="@{/newBook}" method="post" action="addBook.html">
+            <input type="hidden" name="id" th:value="${draftBook.id} ?: ''">
+            <table class="tableEdit">
+                <tbody>
+                <tr>
+                    <td>Name:</td>
+                    <td><input id="name-input" name="name" type="text" th:value="${draftBook.name} ?: '' "/></td>
+                </tr>
+                <tr>
+                    <td>ISBN:</td>
+                    <td><input id="isbn-input" name="isbn" type="text" th:value="${draftBook.isbn} ?: ''"/></td>
+                </tr>
+                <tr>
+                    <td>Authors:</td>
+                    <td>
+                        <input type="hidden" name="authorsId" th:value="${bookAuthorsId}">
+                        <div th:if="${draftBook.authorsList != null}">
+                            <p th:each="author: ${draftBook.authorsList}">[(${author.name} + ' ' + ${author.surname})] |
+                                <button class="btnDeleteItem" type="submit" name="deletedAuthorId"
+                                        th:value="${author.id}">Delete
+                                </button>
+                            </p>
+                        </div>
+                        <div th:if="${allowedAuthors.size > 0}">
+                            <select name="newAuthorId">
+                                <option></option>
+                                <option th:each="author : ${allowedAuthors}" th:value="${author.id}"
+                                        th:text="${author.name} + ' ' + ${author.surname}">Aleksandr Pushkin
+                                </option>
+                            </select>
+                            <button class="btnAddItem" type="submit" name="addAuthor" value="pressed">Add author
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Genres:</td>
+                    <td>
+                        <input type="hidden" name="genresId" th:value="${bookGenresId}">
+                        <div th:if="${draftBook.genresList != null}">
+                            <p th:each="genre: ${draftBook.genresList}">[(${genre.name})] |
+                                <button class="btnDeleteItem" type="submit" name="deletedGenreId"
+                                        th:value="${genre.id}">Delete
+                                </button>
+                            </p>
+                        </div>
+                        <div th:if="${allowedGenres.size > 0}">
+                            <select name="newGenreId">
+                                <option></option>
+                                <option th:each="genre : ${allowedGenres}" th:value="${genre.id}"
+                                        th:text="${genre.name}">Programming
+                                </option>
+                            </select>
+                            <button class="btnAddItem" type="submit" name="addGenre" value="pressed">Add genre</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button class="btnAction" type="submit" name="saveBook" value="pressed">Save</button>
+                        <button class="btnAction" type="button" onclick="window.location.href='authors.html'"
+                                th:onclick="window.location.href='/authors'">Cancel
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete genre</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/header.html :: header"></div>
+    <div class="header">Delete book</div>
+    <div th:if="${error != null}">
+        <b th:text="${error}">Error</b>
+    </div>
+    <div th:if="${error != null}">
+        <b>Error deleting book with id [(${bookId})]</b>
+        <p th:text="${error}">Error description</p>
+    </div>
+    <div th:if="${error == null}" th:object="${book}">
+        <p>Id: [(*{id})]</p>
+        <p><b>Do you want to delete book?</b></p>
+        <form name="delete-book" method="post" action="deleteBook.html" th:action="@{/deleteBook(id=${book.id})}">
+            <button class="btnAction" type="submit">Yes</button>
+            <button class="btnAction" type="button" onclick="window.location.href='bookList.html';"
+                    th:onclick="window.location.href='/books'">Cancel
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
