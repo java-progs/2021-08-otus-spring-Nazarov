@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<div th:fragment="header">
+    <table>
+        <tbody>
+        <tr>
+            <td align="left"></td>
+        </tr>
+        </tbody>
+    </table>
+    <p><a href="/books.html" th:href="@{/books}">Books</a> | <a href="/authors.html" th:href="@{/authors}">Authors</a> |
+        <a href="/genres.html" th:href="@{/genres}">Genres</a></p>
+    <p sec:authorize="isAuthenticated()">
+    <form method="post" action="/logout">
+        <table>
+            <tbody>
+            <tr>
+                <td>User: <span sec:authentication="name">User</span></td>
+                <td>
+                    <button class="btnLogout" type="submit">Logout</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/header.html :: header"></div>
+    <div class="header">Genres</div>
+    <p sec:authorize="hasRole('ROLE_ADMIN')"><a href="newGenre.html" th:href="@{/addGenre}">New genre</a></p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Books</th>
+            <th sec:authorize="hasRole('ROLE_ADMIN')">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="genre : ${genres}">
+            <td th:text="${genre.id}">1</td>
+            <td th:text="${genre.name}">Programming</td>
+            <td><a href="/books.html" th:href="@{/books(genre=${genre.id})}">Books list</a></td>
+            <td sec:authorize="hasRole('ROLE_ADMIN')">
+                <a href="/editGenre.html" th:href="@{/editGenre(id=${genre.id})}">Update</a>
+                | <a href="/deleteGenre.html" th:href="@{/deleteGenre(id=${genre.id})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
