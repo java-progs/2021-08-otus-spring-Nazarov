@@ -2,6 +2,7 @@ package ru.otus.homework.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,10 @@ import ru.otus.homework.domain.Genre;
 import ru.otus.homework.dto.BookDto;
 import ru.otus.homework.dto.Mapper;
 import ru.otus.homework.exception.RecordNotFoundException;
-import ru.otus.homework.service.*;
+import ru.otus.homework.service.AuthorService;
+import ru.otus.homework.service.BookService;
+import ru.otus.homework.service.CommentService;
+import ru.otus.homework.service.GenreService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +33,6 @@ public class BookController {
     private final AuthorService authorService;
     private final GenreService genreService;
     private final CommentService commentService;
-    private final SecureService secureService;
     private final Mapper mapper;
 
     @GetMapping(value = {"/", "/books"})
@@ -72,9 +75,9 @@ public class BookController {
         return "bookList";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/newBook")
     public String newBookForm(Model model) {
-        secureService.checkRoleAdmin();
         val authors = authorService.getAllAuthors();
         val genres = genreService.getAllGenres();
         model.addAttribute("draftBook", new Book());
@@ -83,9 +86,9 @@ public class BookController {
         return "book";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/newBook", params = {"addAuthor", "newAuthorId"})
     public String bookAddAuthor(BookDto bookDto, String newAuthorId, Model model) {
-        secureService.checkRoleAdmin();
         val authorsId = bookDto.getAuthorsId() + DELIMITER + newAuthorId;
         bookDto.setAuthorsId(authorsId);
 
@@ -93,9 +96,9 @@ public class BookController {
         return "book";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/newBook", params = {"addGenre", "newGenreId"})
     public String bookAddGenre(BookDto bookDto, String newGenreId, Model model) {
-        secureService.checkRoleAdmin();
         val genresId = bookDto.getGenresId() + DELIMITER + newGenreId;
         bookDto.setGenresId(genresId);
 
@@ -103,9 +106,9 @@ public class BookController {
         return "book";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/newBook", params = {"deletedAuthorId"})
     public String bookDeleteAuthor(BookDto bookDto, String deletedAuthorId, Model model) {
-        secureService.checkRoleAdmin();
         val authorsIdList = splitString(bookDto.getAuthorsId(), DELIMITER);
         authorsIdList.remove(deletedAuthorId);
 
@@ -115,9 +118,9 @@ public class BookController {
         return "book";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/newBook", params = {"deletedGenreId"})
     public String bookDeleteGenre(BookDto bookDto, String deletedGenreId, Model model) {
-        secureService.checkRoleAdmin();
         val genresIdList = splitString(bookDto.getGenresId(), DELIMITER);
         genresIdList.remove(deletedGenreId);
 
@@ -127,18 +130,18 @@ public class BookController {
         return "book";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/newBook")
     public String bookSave(BookDto bookDto, Model model) {
-        secureService.checkRoleAdmin();
         val book = mapper.toBook(bookDto);
         bookService.saveBook(book);
 
         return "redirect:/books";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/editBook", params = "id")
     public String updateBook(long id, Model model) {
-        secureService.checkRoleAdmin();
         Book book;
 
         try {
@@ -153,16 +156,16 @@ public class BookController {
         return "book";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/deleteBook")
     public String confirmDeleteBook(@RequestParam("id") long id, Model model) {
-        secureService.checkRoleAdmin();
         fillBookModel(id, model);
         return "deleteBook";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/deleteBook")
     public String deleteBook(@RequestParam("id") long id) {
-        secureService.checkRoleAdmin();
         bookService.deleteBookById(id);
         return "redirect:/books";
     }

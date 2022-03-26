@@ -3,6 +3,7 @@ package ru.otus.homework.rest;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,14 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.service.AuthorService;
-import ru.otus.homework.service.SecureService;
 
 @Controller
 @RequiredArgsConstructor
 public class AuthorController {
 
     private final AuthorService authorService;
-    private final SecureService secureService;
 
     @GetMapping("/authors")
     public String getAll(Model model) {
@@ -26,43 +25,43 @@ public class AuthorController {
         return "authorsList";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/addAuthor")
     public String addAuthor() {
-        secureService.checkRoleAdmin();
         return "addAuthor";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/addAuthor")
     public String addAuthor(Author author) {
-        secureService.checkRoleAdmin();
         authorService.saveAuthor(author);
         return "redirect:/authors";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/editAuthor")
     public String editAuthor(@RequestParam("id") long id, Model model) {
-        secureService.checkRoleAdmin();
         fillAuthor(id, model);
         return "editAuthor";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/editAuthor")
     public String editAuthor(Author author) {
-        secureService.checkRoleAdmin();
         authorService.saveAuthor(author);
         return "redirect:/authors";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/deleteAuthor")
     public String confirmDeleteAuthor(@RequestParam("id") long id, Model model) {
-        secureService.checkRoleAdmin();
         fillAuthor(id, model);
         return "deleteAuthor";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/deleteAuthor")
     public String deleteAuthor(@RequestParam("id") long id, Model model) {
-        secureService.checkRoleAdmin();
         try {
             authorService.deleteAuthorById(id);
         } catch (DataIntegrityViolationException e) {

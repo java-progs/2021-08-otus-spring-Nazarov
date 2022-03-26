@@ -8,6 +8,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import ru.otus.homework.config.AppProps;
 import ru.otus.homework.service.UserService;
 
 import java.time.LocalDateTime;
@@ -16,10 +17,7 @@ import java.time.LocalDateTime;
 public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
 
     private final UserService userService;
-
-    private final int MAX_ATTEMPTS = 3;
-    private final long BLOCK_TIME_IN_SECONDS = 60 * 3;
-
+    private final AppProps props;
 
     @Override
     public void setUserDetailsService(UserDetailsService userDetailsService) {
@@ -34,10 +32,10 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
             val optionalUser = userService.getUser(username);
             val user = optionalUser.get();
 
-            if (user.getLoginAttempts() >= MAX_ATTEMPTS
-                    && !isExpired(user.getFirstAttempt(), BLOCK_TIME_IN_SECONDS)) {
+            if (user.getLoginAttempts() >= props.getLoginAttempts()
+                    && !isExpired(user.getFirstAttempt(), props.getLoginBlockTime())) {
                 throw new LockedException("Account locked until "
-                        + user.getFirstAttempt().plusSeconds(BLOCK_TIME_IN_SECONDS));
+                        + user.getFirstAttempt().plusSeconds(props.getLoginBlockTime()));
             }
 
             userService.updateSuccessLoginTime(username);

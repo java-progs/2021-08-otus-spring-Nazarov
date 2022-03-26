@@ -8,9 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.otus.homework.domain.Comment;
 import ru.otus.homework.exception.RecordNotFoundException;
 import ru.otus.homework.service.BookService;
 import ru.otus.homework.service.CommentService;
+
+import java.sql.Timestamp;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,12 +26,17 @@ public class CommentController {
     public String addComment(@RequestParam("bookId") long bookId,
                              @RequestParam("commentText") String text,
                              Model model) {
-        var author = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (author == null) {
-            author = "anonymous";
+        try {
+            val book = bookService.getBookById(bookId);
+            var author = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (author == null) {
+                author = "anonymous";
+            }
+            val comment = new Comment(0, author, new Timestamp(System.currentTimeMillis()), text, book);
+            commentService.saveComment(comment);
+        } catch (RecordNotFoundException e) {
         }
 
-        commentService.saveComment(author, text, bookId);
         fillBookModel(bookId, model);
         return "bookDetails";
     }
@@ -37,19 +45,16 @@ public class CommentController {
     public String updateComment(@RequestParam("bookId") long bookId,
                                 @RequestParam("commentId") long commentId,
                                 Model model) {
-        fillBookModel(bookId, model);
-        if (model.getAttribute("error") != null) {
-            return "bookDetails";
-        }
-
         try {
             val comment = commentService.getCommentById(commentId);
             model.addAttribute("action", "updateComment");
             model.addAttribute("comment", comment);
-            return "bookDetails";
         } catch (RecordNotFoundException e) {
-            return "bookDetails";
         }
+
+        fillBookModel(bookId, model);
+
+        return "bookDetails";
     }
 
     @PostMapping(value = "/updateComment", params = {"bookId", "commentId", "commentText"})
@@ -57,7 +62,13 @@ public class CommentController {
                                 @RequestParam("commentId") long commentId,
                                 @RequestParam("commentText") String text,
                                 Model model) {
-        commentService.updateComment(commentId, text);
+        try {
+            val comment = commentService.getCommentById(commentId);
+            comment.setText(text);
+            commentService.updateComment(comment);
+        } catch (RecordNotFoundException e) {
+        }
+
         fillBookModel(bookId, model);
         return "bookDetails";
     }
@@ -66,7 +77,12 @@ public class CommentController {
     public String deleteComment(@RequestParam("bookId") long bookId,
                                 @RequestParam("commentId") long commentId,
                                 Model model) {
-        commentService.deleteCommentById(commentId);
+        try {
+            val comment = commentService.getCommentById(commentId);
+            commentService.deleteComment(comment);
+        } catch (Exception e) {
+        }
+
         fillBookModel(bookId, model);
         return "bookDetails";
     }

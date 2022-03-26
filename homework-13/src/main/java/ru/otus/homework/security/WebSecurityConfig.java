@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.otus.homework.config.AppProps;
 import ru.otus.homework.service.UserServiceImpl;
 
 @EnableWebSecurity
@@ -19,10 +20,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final UserServiceImpl userService;
+    private final AppProps props;
 
     @Bean
-    public CustomAuthenticationProvider customAuthProvider() throws Exception {
-        val provider = new CustomAuthenticationProvider(userService);
+    public CustomAuthenticationProvider customAuthProvider() {
+        val provider = new CustomAuthenticationProvider(userService, props);
         provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
         return provider;

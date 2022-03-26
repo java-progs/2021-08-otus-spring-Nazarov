@@ -43,11 +43,6 @@ public class AuthorControllerTest {
 
     private final static long AUTHOR_ID = 100;
 
-    @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-    protected class Config {
-
-    }
-
     @BeforeEach
     public void setupMocks() throws Exception {
         when(service.getAuthorById(AUTHOR_ID)).thenReturn(new Author(AUTHOR_ID, "Pushkin", "Aleksandr", ""));

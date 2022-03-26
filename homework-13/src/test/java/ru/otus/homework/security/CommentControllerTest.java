@@ -7,18 +7,23 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
-import ru.otus.homework.rest.CommentController;
-import ru.otus.homework.service.*;
+import ru.otus.homework.service.BookService;
+import ru.otus.homework.service.CommentService;
+import ru.otus.homework.service.CustomUserDetailsService;
+import ru.otus.homework.service.UserServiceImpl;
 
 import java.sql.Timestamp;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,14 +31,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Comment controller должен ")
-@WebMvcTest(CommentController.class)
+@SpringBootTest
+@DirtiesContext
+@AutoConfigureMockMvc
 public class CommentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private SecureService secureService;
     @MockBean
     private CustomUserDetailsService userDetailsService;
     @MockBean
@@ -49,7 +54,7 @@ public class CommentControllerTest {
     @BeforeEach
     public void setupMocks() throws Exception {
         val book = new Book(0L, "Book","", List.of(), List.of());
-        when(bookService.getBookById(BOOK_ID)).thenReturn(book);
+        when(bookService.getBookById(anyLong())).thenReturn(book);
         when(commentService.getCommentById(COMMENT_ID)).thenReturn(
                 new Comment(COMMENT_ID, "Test author", new Timestamp(System.currentTimeMillis()), "Comment text", book));
     }

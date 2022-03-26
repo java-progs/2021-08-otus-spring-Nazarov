@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.domain.Comment;
 import ru.otus.homework.exception.RecordNotFoundException;
-import ru.otus.homework.repositories.BookRepository;
 import ru.otus.homework.repositories.CommentRepository;
 
 import java.sql.Timestamp;
@@ -27,7 +26,6 @@ public class CommentServiceImpl implements CommentService {
     private static final String USER_ROLE = "ROLE_USER";
 
     private final CommentRepository commentRepository;
-    private final BookRepository bookRepository;
     private final JdbcMutableAclService mutableAclService;
 
     @Override
@@ -57,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean saveComment(Comment comment) {
+    public boolean saveComment(@Param("comment") Comment comment) {
 
         val savedComment = commentRepository.save(comment);
 
@@ -85,22 +83,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean saveComment(String author, String text, long bookId) {
-        val optionalBook = bookRepository.findById(bookId);
-
-        if (optionalBook.isEmpty()) {
-            return false;
-        }
-
-        val book = optionalBook.get();
-        val comment = new Comment(0, author, getCurrentTime(), text, book);
-
-        return saveComment(comment);
-    }
-
-    @Override
-    @Transactional
-    //@PreAuthorize(value = "hasPermission(#comment, 'ru.otus.homework.domain.Comment', 'WRITE')")
     public boolean updateComment(@Param("comment") Comment comment) {
         Comment updatedComment;
         comment.setTime(getCurrentTime());
@@ -111,35 +93,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean updateComment(long id, String text) {
-        val optionalComment = commentRepository.findById(id);
-
-        if (optionalComment.isEmpty()) {
-            return false;
-        }
-
-        val comment = optionalComment.get();
-        comment.setText(text);
-
-        return updateComment(comment);
-    }
-
-    @Override
-    @Transactional
-    public void deleteComment(Comment comment) {
+    public void deleteComment(@Param("comment") Comment comment) {
         commentRepository.delete(comment);
         val objectId = new ObjectIdentityImpl(comment.getClass(), comment.getId());
         mutableAclService.deleteAcl(objectId, true);
-    }
-
-    @Override
-    @Transactional
-    public void deleteCommentById(long id) {
-        val optionalComment = commentRepository.findById(id);
-
-        if(optionalComment.isPresent()) {
-            deleteComment(optionalComment.get());
-        }
     }
 
     private Timestamp getCurrentTime() {

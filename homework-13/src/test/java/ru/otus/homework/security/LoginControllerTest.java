@@ -3,11 +3,12 @@ package ru.otus.homework.security;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.homework.config.AppProps;
+import ru.otus.homework.rest.LoginController;
 import ru.otus.homework.service.CustomUserDetailsService;
 import ru.otus.homework.service.UserServiceImpl;
 
@@ -15,9 +16,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Login controller должен ")
-@SpringBootTest
-@DirtiesContext
-@AutoConfigureMockMvc
+@WebMvcTest(LoginController.class)
+@Import({AppProps.class})
 public class LoginControllerTest {
 
     @Autowired

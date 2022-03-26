@@ -27,4 +27,8 @@ server:
 
 logging:
   level:
-    root: DEBUG
+    root: ERROR
+
+app:
+  login-attempts: 3
+  login-block-time: 180
