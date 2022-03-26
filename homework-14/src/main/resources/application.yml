@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    show-sql: true
+
+  data:
+    mongodb:
+      #port: 0
+      #database: test
+      host: localhost
+      port: 27017
+      database: library
+
+  sql:
+    init:
+      mode: always
+      #data-locations: data.sql
+      #schema-locations: schema.sql
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+  batch:
+    job:
+      enabled: false
+
+logging:
+  level:
+    root: ERROR
