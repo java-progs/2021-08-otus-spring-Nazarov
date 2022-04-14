@@ -1,0 +1,38 @@
+package ru.otus.homework.domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "comment")
+public class Comment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "author")
+    private String author;
+
+    @Column(name = "time")
+    private LocalDateTime time;
+
+    @Column(name = "text")
+    private String text;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+    public Comment(String author, String text) {
+        this.author = author;
+        this.text = text;
+    }
+}
