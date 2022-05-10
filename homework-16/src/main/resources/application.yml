@@ -1,0 +1,47 @@
+spring:
+  data:
+    mongodb:
+      #port: 0
+      #database: test
+      host: localhost
+      port: 27017
+      database: library
+
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.homework.changelogs
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, logfile, loggers, metrics
+    info:
+      env:
+        enabled: true
+  endpoint:
+    health:
+      show-details: always
+info:
+  app:
+    version: 1.0
+    authors: Konstantin Nazarov
+    description: Web app with actuator
+
+logging:
+  level:
+    root: DEBUG
+
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG
+
+      mongodb: INFO
+
+  file:
+    name: application.log
