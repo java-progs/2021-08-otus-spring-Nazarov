@@ -1,4 +1,5 @@
 *.iml
+*.logs
 .idea/
 .DS_Store
 target/
