@@ -15,7 +15,7 @@ public class LibraryHealthIndicator implements HealthIndicator {
 
     @Override
     public Health health() {
-        val bookResult = getAppStatus();
+        val bookResult = getLibraryStatus();
         if (bookResult > 0) {
             return Health.up().withDetail("countBook", bookResult).build();
         } else {
@@ -23,8 +23,8 @@ public class LibraryHealthIndicator implements HealthIndicator {
         }
     }
 
-    private int getAppStatus() {
-        return bookService.getAllBooks().size();
+    private long getLibraryStatus() {
+        return bookService.getCountBooks();
     }
 
 }
