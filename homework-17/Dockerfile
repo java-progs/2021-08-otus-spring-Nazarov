@@ -11,6 +11,6 @@ FROM openjdk:11-jre-slim
 ENV PROJECT_DIR_APP=/app
 RUN mkdir -p PROJECT_DIR_RUN
 WORKDIR $PROJECT_DIR_APP
-COPY --from=build /tmp/docker_build/target/homework-17-1.0-SNAPSHOT.jar $PROJECT_DIR_APP/
+COPY --from=build /tmp/docker_build/target/homework-17.jar $PROJECT_DIR_APP/
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/homework-17-1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/homework-17.jar"]
