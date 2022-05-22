@@ -1,0 +1,33 @@
+version: '3'
+services:
+  mongo-db:
+    container_name: mongo_container
+    image: mongo:latest
+    volumes:
+      - data:/data/db
+      - config:/data/configdb
+    networks:
+      - internal_net
+  library-app:
+    container_name: library_container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:8080
+    depends_on:
+      - mongo-db
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongo_container
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=library
+    networks:
+      - internal_net
+
+volumes:
+  data:
+  config:
+
+networks:
+  internal_net:
+    driver: bridge

@@ -1,0 +1,211 @@
+body {
+    font-family: sans-serif;
+}
+
+a {
+  color: blue;
+}
+
+a:visited {
+  color: blue;
+}
+
+input {
+  display: block;
+  width: 200px;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+}
+
+textarea {
+  width: 300px;
+  resize: vertical;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+  height: 50px;
+}
+
+select {
+  width: 200px;
+  margin: 10px 5px 10px 5px;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+  background-color: #fff;
+}
+
+.container {
+    max-width: 1000px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.header {
+  background-color: #4682B4;
+  margin-top:10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #b0c4de;
+    border-collapse: collapse;
+}
+
+.table th {
+    font-weight: bold;
+    color: #fff;
+    padding: 5px;
+    background: #2775aa;
+    border: 1px solid #dddddd;
+}
+
+.table td {
+    border: 1px solid #dddddd;
+    padding: 5px;
+}
+
+.tableEdit {
+    width: 70%;
+    margin-bottom: 5px;
+    border: 0px;
+}
+
+.tableEdit td {
+    vertical-align: top;
+}
+
+.btn {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 0 20px;
+  margin: 10px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  height: 32px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: #fff;
+  background-color: #2775aa;
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  vertical-align: top;
+  transition: box-shadow 0.2s;
+}
+
+.btn:hover {
+  background-color: #2755bb;
+}
+
+.btn:disabled {
+  background-color: #aaa;
+  pointer-events: none;
+}
+
+.btnAction {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 0 20px;
+  margin: 0 15px 15px 0;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  color: #fff;
+  background-color: #2775aa;
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  vertical-align: top;
+  transition: box-shadow 0.2s;
+}
+
+.btnAction:hover {
+  background-color: #2755bb;
+}
+
+.btnAction:disabled {
+  background-color: #aaa;
+  pointer-events: none;
+}
+
+.btnDeleteItem {
+    height: 20px;
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px;
+    outline: none;
+    border-width: 1px;
+    border-color: #CD5C5C;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background-color: #cd5c5d;
+    cursor: pointer;
+    user-select: none;
+    appearance: none;
+}
+
+.btnAddItem {
+    height: 20px;
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px;
+    outline: none;
+    border-width: 1px;
+    border-color: #008000;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background-color: #008000;
+    cursor: pointer;
+    user-select: none;
+    appearance: none;
+}
+
+.btnLogout {
+    height: 16px;
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 2px;
+    margin: 5px;
+    outline: none;
+    border-width: 1px;
+    border-color: #008000;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background-color: #008000;
+    cursor: pointer;
+    user-select: none;
+    appearance: none;
+}
+
+.fieldValue {
+  margin: 5px;
+}
