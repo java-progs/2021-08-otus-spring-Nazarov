@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div th:replace="fragments/header.html :: header"></div>
+    <div class="header">Authors</div>
+    <div class="container" th:if="${error != null}">
+        <h1 th:text="${error}">Error</h1>
+    </div>
+    <div th:if="${error == null}">
+        <p><a href="newAuthor.html" th:href="@{/addAuthor}">New author</a></p>
+        <div th:if="${authors.size() == 0}">Authors not found</div>
+        <div th:if="${authors.size() > 0}">
+            <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Surname</th>
+                <th>Name</th>
+                <th>Patronymic</th>
+                <th>Books</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="author : ${authors}">
+                <td th:text="${author.id}">1</td>
+                <td th:text="${author.surname}">Pushkin</td>
+                <td th:text="${author.name}">Aleksandr</td>
+                <td th:text="${author.patronymic}">Sergeevich</td>
+                <td><a href="/books.html" th:href="@{/books(author=${author.id})}">Books list</a></td>
+                <td><span><a href="/editAuthor.html" th:href="@{/editAuthor(id=${author.id})}">Update</a> | <a
+                        href="/deleteAuthor.html" th:href="@{/deleteAuthor(id=${author.id})}">Delete</a></span></td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
